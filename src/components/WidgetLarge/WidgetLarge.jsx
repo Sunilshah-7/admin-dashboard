@@ -1,5 +1,62 @@
 import React from "react";
-import "./WidgetLarge";
+import "./WidgetLarge.css";
 export default function WidgetLarge() {
-  return <div className="widgetLg">Large</div>;
+  const Button = ({type})=>{
+    return(
+      <button className={`widgetLgBtn ${type}`}>{type}</button>
+    )
+  }
+  return <div className="widgetLg">
+    <h3 className="widgetLgTitle">Latest Transcations</h3>
+    <table className="widgetLgTable">
+      <tr className="widgetLgTr">
+        <th className="widgetLgTh">Customer</th>
+        <th className="widgetLgTh">Date</th>
+        <th className="widgetLgTh">Amount</th>
+        <th className="widgetLgTh">Status</th>
+      </tr>
+      <tr className="widgetLgTr">
+        <td className="widgetLgUser">
+          <img 
+          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_wRwK8gNjNOr2aB5roetnKPA7TtegKrNb6w&usqp=CAU"
+          alt=""
+          className="widgetLgImg"/>
+          <span className="widgetLgUserName">Monkey D.Luffy </span>
+        </td>
+        <td className="widgetLgDate">22 Jun 2022</td>
+        <td className="widgetLgAmount">$2,000</td>
+        <td className="widgetLgStatus">
+          <Button type="Approved"/>
+        </td>
+      </tr>
+      <tr className="widgetLgTr">
+        <td className="widgetLgUser">
+          <img 
+          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_wRwK8gNjNOr2aB5roetnKPA7TtegKrNb6w&usqp=CAU"
+          alt=""
+          className="widgetLgImg"/>
+          <span className="widgetLgUserName">Monkey D.Luffy </span>
+        </td>
+        <td className="widgetLgDate">22 Jun 2022</td>
+        <td className="widgetLgAmount">$2,000</td>
+        <td className="widgetLgStatus">
+          <Button type="Pending"/>
+        </td>
+      </tr>
+      <tr className="widgetLgTr">
+        <td className="widgetLgUser">
+          <img 
+          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_wRwK8gNjNOr2aB5roetnKPA7TtegKrNb6w&usqp=CAU"
+          alt=""
+          className="widgetLgImg"/>
+          <span className="widgetLgUserName">Monkey D.Luffy </span>
+        </td>
+        <td className="widgetLgDate">22 Jun 2022</td>
+        <td className="widgetLgAmount">$2,000</td>
+        <td className="widgetLgStatus">
+          <Button type="Declined"/>
+        </td>
+      </tr>
+    </table>
+  </div>;
 }

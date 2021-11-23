@@ -47,4 +47,43 @@ export const userData = [
       name: "Dec",
       "Active User": 5000,
     },
+];
+
+export const userRows = [
+    {
+      id: 1,
+      username: "Jon Snow",
+      avatar:
+        "https://www.seekpng.com/png/detail/60-601088_jon-snow-png-image-free-download-can-t.png",
+      email: "jon@gmail.com",
+      status: "active",
+      transaction: "$100",
+    },
+    {
+      id: 2,
+      username: "Cersei Lannister",
+      avatar:
+        "https://www.seekpng.com/png/detail/60-601088_jon-snow-png-image-free-download-can-t.png",
+      email: "cersei@gmail.com",
+      status: "active",
+      transaction: "$200",
+    },
+    {
+      id: 3,
+      username: "Jaime Lannister",
+      avatar:
+        "https://www.seekpng.com/png/detail/60-601088_jon-snow-png-image-free-download-can-t.png",
+      email: "jaime@gmail.com",
+      status: "active",
+      transaction: "$50",
+    },
+    {
+      id: 4,
+      username: "Arya Stark",
+      avatar:
+        "https://www.seekpng.com/png/detail/60-601088_jon-snow-png-image-free-download-can-t.png",
+      email: "arya@gmail.com",
+      status: "active",
+      transaction: "$1000",
+    },
   ];

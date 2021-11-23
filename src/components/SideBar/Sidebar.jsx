@@ -22,6 +22,7 @@ export default function Sidebar() {
           <ul className="sidebarList">
             <li className="sidebarItem active">
               <LineStyleIcon className="sidebarIcon" />
+
               <span>Home</span>
             </li>
             <li className="sidebarItem">
@@ -39,6 +40,7 @@ export default function Sidebar() {
           <ul className="sidebarList">
             <li className="sidebarItem">
               <PersonOutlineOutlinedIcon className="sidebarIcon" />
+
               <span>Users</span>
             </li>
             <li className="sidebarItem">
