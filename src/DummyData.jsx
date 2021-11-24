@@ -49,6 +49,34 @@ export const userData = [
     },
 ];
 
+export const productData = [
+  {
+    name: "Jan",
+    "Sales": 4000,
+  },
+  {
+    name: "Feb",
+    "Sales": 3000,
+  },
+  {
+    name: "Mar",
+    "Sales": 5000,
+  },
+  {
+    name: "Apr",
+    "Sales": 1000,
+  },
+  {
+    name: "May",
+    "Sales": 3000,
+  },
+  {
+    name: "Jun",
+    "Sales": 2000,
+  },
+
+];
+
 export const userRows = [
     {
       id: 1,
@@ -86,4 +114,43 @@ export const userRows = [
       status: "active",
       transaction: "$1000",
     },
-  ];
+];
+
+export const productRows = [
+  {
+    id: 1,
+    name: "Airpods",
+    img:
+    "https://www.nicepng.com/png/detail/298-2982212_apple-airpods-png.png",
+    stock: 12,
+    status: "active",
+    price: "$100",
+  },
+  {
+    id: 2,
+    name: "Laptop",
+    img:
+      "https://toppng.com/uploads/preview/samsung-laptop-png-11552846920ggjwoxjcy6.png",
+    stock: 10,
+    status: "active",
+    price: "$200",
+  },
+  {
+    id: 3,
+    name: "Earphones",
+    img:
+      "https://www.kindpng.com/picc/m/309-3093277_earphones-png-transparent-png.png",
+    stock: 15,
+    status: "active",
+    price: "$50",
+  },
+  {
+    id: 4,
+    name: "Mobile",
+    img:
+      "https://www.vhv.rs/dpng/d/7-72850_new-mobile-phone-png-transparent-png.png",
+    stock: 20,
+    status: "active",
+    price: "$500",
+  },
+];
