@@ -3,7 +3,7 @@ import "./ProductList.css";
 import { DataGrid } from "@mui/x-data-grid";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { productRows } from "../../DummyData";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 export default function ProductList() {
   const [data, setData] = React.useState(productRows);

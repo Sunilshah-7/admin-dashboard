@@ -1,6 +1,6 @@
 import React from "react";
 import "./Sidebar.css";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import LineStyleIcon from "@mui/icons-material/LineStyle";
 import TimelineIcon from "@mui/icons-material/Timeline";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";

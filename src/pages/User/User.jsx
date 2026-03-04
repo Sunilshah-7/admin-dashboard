@@ -1,5 +1,5 @@
 import "./User.css";
-import {Link} from "react-router-dom";
+import {Link} from "react-router";
 import PermIdentityIcon from "@mui/icons-material/PermIdentity";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";

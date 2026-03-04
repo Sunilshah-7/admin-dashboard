@@ -3,7 +3,7 @@ import "./UserList.css";
 import { DataGrid } from "@mui/x-data-grid";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { userRows } from "../../DummyData";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 export default function UserList() {
   const [data, setData] = React.useState(userRows);
