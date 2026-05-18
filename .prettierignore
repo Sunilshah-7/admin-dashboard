@@ -1,0 +1,10 @@
+.next
+out
+build
+coverage
+node_modules
+next-env.d.ts
+*.tsbuildinfo
+
+# Archived pre-migration Vite app.
+inventory

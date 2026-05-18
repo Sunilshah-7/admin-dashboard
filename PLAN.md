@@ -1,0 +1,635 @@
+# Reflection AI Dashboard — Build Plan
+
+## Project Overview
+
+A Next.js 16 enterprise admin dashboard for AI infrastructure management, designed as a portfolio project targeting Reflection AI's "Member of Technical Staff — Applications" role. The dashboard simulates a developer-friendly AI platform for engineering teams, featuring GPU monitoring, model registry, deployment pipelines, team management, and enterprise integrations.
+
+---
+
+## Tech Stack
+
+| Layer          | Technology                                  | Version |
+| -------------- | ------------------------------------------- | ------- |
+| Framework      | Next.js (App Router)                        | 16.x    |
+| Language       | TypeScript                                  | 5.x     |
+| Styling        | Tailwind CSS                                | 4.x     |
+| UI Components  | shadcn/ui                                   | latest  |
+| Icons          | Lucide React                                | latest  |
+| Charts         | Recharts + Tremor                           | latest  |
+| Tables         | TanStack Table                              | 8.x     |
+| State (Client) | Zustand                                     | 5.x     |
+| State (Server) | TanStack Query (React Query)                | 5.x     |
+| Forms          | React Hook Form + Zod                       | latest  |
+| Mock API       | MSW (Mock Service Worker)                   | 2.x     |
+| Fake Data      | @faker-js/faker                             | latest  |
+| Testing        | Vitest + React Testing Library + Playwright | latest  |
+| Date Utils     | date-fns                                    | latest  |
+
+---
+
+## Architecture
+
+```
+reflection-dashboard/
+├── app/                          # Next.js App Router
+│   ├── (dashboard)/              # Dashboard layout group
+│   │   ├── layout.tsx            # Sidebar + Topbar shell
+│   │   ├── dashboard/            # Main dashboard page
+│   │   ├── models/               # Model registry
+│   │   ├── deployments/          # CI/CD pipeline status
+│   │   ├── teams/                # Team & role management
+│   │   ├── monitoring/           # Real-time alerts & metrics
+│   │   ├── playground/           # AI prompt testing
+│   │   ├── integrations/         # SSO/API config
+│   │   └── settings/             # Billing, security, audit
+│   ├── api/                      # Next.js API routes (for MSW fallback)
+│   ├── login/                    # Auth page
+│   ├── layout.tsx                # Root layout with providers
+│   └── page.tsx                  # Landing / redirect
+├── components/
+│   ├── ui/                       # shadcn/ui primitives
+│   ├── layout/                   # Sidebar, Topbar, Breadcrumbs
+│   ├── charts/                   # Recharts wrappers
+│   ├── tables/                   # TanStack Table wrappers
+│   ├── forms/                    # Reusable form components
+│   └── guards/                   # RBAC route guards
+├── hooks/
+│   ├── useAuth.ts                # Auth + permission checks
+│   ├── useGpuMetrics.ts          # GPU monitoring data
+│   ├── useModelRegistry.ts       # Model list/detail
+│   ├── useDeployments.ts         # Deployment pipeline data
+│   ├── useTeams.ts               # Team/user data
+│   ├── useAuditLogs.ts           # Audit trail data
+│   ├── useBilling.ts             # Usage & cost data
+│   └── usePlayground.ts          # Prompt testing state
+├── stores/
+│   ├── authStore.ts              # Zustand: user, roles, tokens
+│   ├── uiStore.ts                # Zustand: sidebar, modals, toasts
+│   └── themeStore.ts             # Zustand: dark/light mode
+├── lib/
+│   ├── api-client.ts             # Typed fetch/axios wrapper
+│   ├── permissions.ts            # RBAC logic
+│   ├── validators.ts             # Zod schemas
+│   └── utils.ts                  # cn(), formatters, etc.
+├── mocks/
+│   ├── browser.ts                # MSW browser setup
+│   ├── server.ts                 # MSW server setup (for tests)
+│   ├── handlers.ts               # All API route handlers
+│   └── data/
+│       ├── gpu-metrics.ts        # Time-series GPU data generator
+│       ├── model-registry.ts     # Model catalog data
+│       ├── deployments.ts        # CI/CD pipeline data
+│       ├── teams.ts              # User/role data
+│       ├── audit-logs.ts         # Compliance trail data
+│       ├── billing.ts            # Usage/cost data
+│       └── playground.ts         # Prompt response data
+├── types/
+│   ├── api.ts                    # API request/response types
+│   ├── models.ts                 # Domain model types
+│   └── auth.ts                   # Auth & RBAC types
+├── tests/
+│   ├── unit/                     # Vitest tests
+│   └── e2e/                      # Playwright tests
+└── public/                       # Static assets
+```
+
+---
+
+## Phase 1: Foundation & Migration (Week 1)
+
+### 1.1 Initialize Next.js 16 Project
+
+- [x] Run `npx create-next-app@latest` with TypeScript, Tailwind, App Router
+- [x] Configure `tsconfig.json` with strict mode and path aliases (`@/*`)
+- [x] Set up ESLint + Prettier with consistent rules
+- [x] Configure `next.config.js` for static export (for Vercel deployment)
+
+### 1.2 Install Core Dependencies
+
+- [ ] shadcn/ui: `npx shadcn@latest init`
+- [ ] State: `zustand`, `@tanstack/react-query`
+- [ ] Tables: `@tanstack/react-table`
+- [ ] Charts: `recharts`, `@tremor/react`
+- [ ] Forms: `react-hook-form`, `zod`, `@hookform/resolvers`
+- [ ] Mock: `msw`, `@faker-js/faker`
+- [ ] Utils: `date-fns`, `lucide-react`
+- [ ] Testing: `vitest`, `@testing-library/react`, `@testing-library/jest-dom`, `playwright`
+
+### 1.3 Set Up shadcn/ui Components
+
+Install the following shadcn/ui primitives:
+
+- [ ] Button, Card, Badge, Avatar, Separator, Skeleton
+- [ ] Dialog, Sheet, DropdownMenu, Popover, Tooltip
+- [ ] Table, DataTable (custom wrapper)
+- [ ] Form, Input, Textarea, Select, Switch, Checkbox
+- [ ] Tabs, Accordion, Breadcrumb, Command (for CMD+K)
+- [ ] Chart (if available) or custom Tremor wrappers
+- [ ] Sonner (toast notifications)
+
+### 1.4 Configure Theme & Layout
+
+- [ ] Set up `next-themes` for dark/light mode
+- [ ] Create enterprise color palette (slate/blue/emerald/amber/rose)
+- [ ] Build root layout with font (Inter), metadata, providers
+- [ ] Build dashboard layout: collapsible sidebar, topbar, main content area
+- [ ] Add responsive breakpoints (mobile sidebar drawer)
+
+### 1.5 Set Up Zustand Stores
+
+- [ ] `authStore`: user object, roles, permissions, login/logout actions
+- [ ] `uiStore`: sidebar open/closed, active modal, toast queue
+- [ ] `themeStore`: theme preference (sync with next-themes)
+
+### 1.6 Set Up TanStack Query
+
+- [ ] Create `QueryClient` with default options (staleTime, refetchInterval)
+- [ ] Wrap app in `QueryClientProvider`
+- [ ] Configure devtools (show in development only)
+
+### 1.7 Set Up MSW (Mock Service Worker)
+
+- [ ] Initialize MSW: `npx msw init public/`
+- [ ] Create `mocks/browser.ts` and `mocks/server.ts`
+- [ ] Create `mocks/handlers.ts` with placeholder routes
+- [ ] Conditionally start MSW in development mode
+- [ ] Verify API calls are intercepted in Network tab
+
+### 1.8 Migrate Existing Assets
+
+- [ ] Port `DummyData.jsx` data into typed mock generators
+- [ ] Port existing page concepts into new route structure
+- [ ] Ensure all old routes redirect or are replaced
+
+**Deliverable**: Running Next.js 16 app with shadcn/ui theme, sidebar layout, and MSW intercepting requests.
+
+---
+
+## Phase 2: Mock Data Layer (Week 1-2)
+
+### 2.1 Define API Types
+
+Create `types/api.ts` with interfaces for all endpoints:
+
+- [ ] `ApiResponse<T>` wrapper with data, meta, error fields
+- [ ] `PaginatedResponse<T>` with page, limit, total, hasMore
+- [ ] `GpuMetric`, `GpuMetricSeries` for time-series data
+- [ ] `Model`, `ModelVersion`, `ModelDeployment` for registry
+- [ ] `Deployment`, `DeploymentStage`, `DeploymentLog` for CI/CD
+- [ ] `TeamMember`, `Role`, `Permission` for RBAC
+- [ ] `AuditLogEntry` for compliance
+- [ ] `BillingUsage`, `BillingInvoice` for cost tracking
+- [ ] `PlaygroundMessage`, `PlaygroundSession` for prompt testing
+
+### 2.2 Build Data Generators
+
+Create faker-powered generators in `mocks/data/`:
+
+- [ ] `gpu-metrics.ts`: Generate 24h of 5-minute interval GPU data (utilization, memory, temp, power)
+- [ ] `model-registry.ts`: Generate 10-20 AI models with versions, statuses, metadata
+- [ ] `deployments.ts`: Generate 15-30 deployment pipelines with stages
+- [ ] `teams.ts`: Generate 8-15 team members with roles (admin, engineer, viewer)
+- [ ] `audit-logs.ts`: Generate 50+ audit entries (login, permission change, deployment)
+- [ ] `billing.ts`: Generate monthly usage data with cost breakdowns
+- [ ] `playground.ts`: Generate mock LLM responses for prompt testing
+
+### 2.3 Build MSW Handlers
+
+Create full REST API in `mocks/handlers.ts`:
+
+- [ ] `GET /api/metrics/gpu` — GPU time-series metrics
+- [ ] `GET /api/metrics/gpu/summary` — Current cluster summary
+- [ ] `GET /api/metrics/inference` — Inference latency & throughput
+- [ ] `GET /api/models` — List models (paginated, filterable)
+- [ ] `GET /api/models/:id` — Model detail
+- [ ] `POST /api/models/:id/deploy` — Trigger deployment
+- [ ] `GET /api/deployments` — List deployments
+- [ ] `GET /api/deployments/:id` — Deployment detail with logs
+- [ ] `GET /api/deployments/:id/logs` — Streaming logs (SSE mock)
+- [ ] `GET /api/teams` — List team members
+- [ ] `POST /api/teams/invite` — Invite new member
+- [ ] `PATCH /api/teams/:id/role` — Update role
+- [ ] `GET /api/audit-logs` — Audit trail (paginated)
+- [ ] `GET /api/billing/usage` — Current period usage
+- [ ] `GET /api/billing/invoices` — Invoice history
+- [ ] `POST /api/playground/completion` — Mock LLM completion
+- [ ] `POST /api/auth/login` — Mock login
+- [ ] `POST /api/auth/logout` — Mock logout
+- [ ] `GET /api/auth/me` — Current user
+
+### 2.4 Build API Client
+
+Create `lib/api-client.ts`:
+
+- [ ] Typed fetch wrapper with base URL, headers, error handling
+- [ ] Request/response interceptors for auth tokens
+- [ ] Standardized error formatting
+- [ ] Support for query params, pagination, filtering
+
+### 2.5 Build TanStack Query Hooks
+
+Create hooks in `hooks/`:
+
+- [ ] `useGpuMetrics(timeRange)` — Returns time-series data, auto-refetch
+- [ ] `useGpuSummary()` — Returns current cluster snapshot
+- [ ] `useInferenceMetrics()` — Returns latency/throughput data
+- [ ] `useModelRegistry(filters)` — Returns paginated model list
+- [ ] `useModelDetail(id)` — Returns single model with versions
+- [ ] `useDeployments()` — Returns deployment list
+- [ ] `useDeploymentDetail(id)` — Returns deployment with stages
+- [ ] `useTeams()` — Returns team members
+- [ ] `useAuditLogs(pagination)` — Returns audit trail
+- [ ] `useBillingUsage()` — Returns current usage
+- [ ] `usePlayground()` — Returns prompt testing state + mutation
+
+**Deliverable**: All API endpoints returning realistic fake data, consumed by typed hooks with loading/error states.
+
+---
+
+## Phase 3: Dashboard Core (Week 2)
+
+### 3.1 Main Dashboard Page (`/dashboard`)
+
+Build the landing dashboard with these sections:
+
+#### Metric Cards (FeaturedInfo replacement)
+
+- [ ] **GPU Utilization** — Current average % with trend indicator
+- [ ] **Active Models** — Count of deployed models with status
+- [ ] **Inference Latency (p95)** — Current latency with sparkline
+- [ ] **Monthly Compute Cost** — Current spend vs. budget
+
+#### Charts
+
+- [ ] **GPU Utilization Over Time** — Line chart (24h, 7d, 30d toggle)
+- [ ] **Inference Latency Distribution** — Area chart with p50/p95/p99 bands
+- [ ] **Model Deployment Activity** — Bar chart of deployments per day
+- [ ] **Cost Breakdown** — Pie/donut chart by service (training, inference, storage)
+
+#### Widgets
+
+- [ ] **Active Training Jobs** — List of running jobs with progress bars
+- [ ] **Recent Deployments** — Table of last 5 deployments with status badges
+- [ ] **System Alerts** — Alert cards (critical, warning, info) with dismiss action
+
+### 3.2 Model Registry Page (`/models`)
+
+- [ ] Data table with columns: Name, Version, Status, Type, Latency, Last Deployed, Actions
+- [ ] Filters: Status (deployed/training/archived), Type (LLM/Vision/Embedding)
+- [ ] Search by name
+- [ ] Row actions: View details, Deploy, Archive
+- [ ] Bulk actions: Multi-select deploy, delete
+- [ ] "Deploy New Model" button → opens wizard
+
+### 3.3 Model Detail Page (`/models/:id`)
+
+- [ ] Header: Model name, version badge, status indicator, action buttons
+- [ ] **Performance Chart** — Inference latency over time
+- [ ] **Version History** — Table of versions with changelog
+- [ ] **Deployment Config** — Environment, scaling settings, endpoint URL
+- [ ] **Metrics Cards** — Total requests, avg latency, error rate, uptime
+
+### 3.4 Deployments Page (`/deployments`)
+
+- [ ] Pipeline view: Cards showing stages (Build → Test → Deploy → Verify)
+- [ ] List view: Table with commit SHA, branch, environment, status, duration
+- [ ] Filter by environment (staging, production)
+- [ ] Deployment detail slide-out with logs
+
+**Deliverable**: Fully functional dashboard with realistic data, charts, and tables.
+
+---
+
+## Phase 4: Enterprise Features (Week 3)
+
+### 4.1 RBAC & Team Management (`/teams`)
+
+- [ ] Team table: Name, Email, Role, Status, Last Active, Actions
+- [ ] Role badges: Admin (red), Engineer (blue), Viewer (gray)
+- [ ] Invite member modal: Email, role selection, workspace assignment
+- [ ] Edit member drawer: Change role, deactivate account
+- [ ] Permission matrix view (read-only): What each role can access
+
+### 4.2 Role-Based Sidebar
+
+- [ ] Admin sees: Dashboard, Models, Deployments, Teams, Monitoring, Integrations, Settings
+- [ ] Engineer sees: Dashboard, Models, Deployments, Monitoring, Playground
+- [ ] Viewer sees: Dashboard, Models (read-only), Monitoring
+- [ ] Hide unauthorized routes from navigation
+- [ ] Redirect unauthorized direct URL access to dashboard
+
+### 4.3 Integrations Page (`/integrations`)
+
+- [ ] **SSO Configuration**:
+  - Provider selection (Okta, Azure AD, Google Workspace)
+  - Metadata URL input, certificate upload
+  - Test connection button with status
+  - SCIM provisioning toggle
+- [ ] **API Keys**:
+  - List of keys with name, prefix, last used, created date
+  - Generate new key flow
+  - Revoke key action
+- [ ] **Webhooks**:
+  - URL input, event selection, secret key
+  - Delivery history table
+
+### 4.4 Settings Pages
+
+- [ ] `/settings/security`:
+  - SOC2 compliance badge
+  - GDPR data processing toggle
+  - Session management (active sessions, revoke)
+  - 2FA enrollment mock
+- [ ] `/settings/billing`:
+  - Current plan card with usage bar
+  - Token consumption chart
+  - Compute hours by service
+  - Invoice history table
+  - Usage alerts configuration
+- [ ] `/settings/audit`:
+  - Full audit log table with filters (actor, action, date range)
+  - Export to CSV button
+
+### 4.5 Monitoring & Alerts (`/monitoring`)
+
+- [ ] Alert feed: Real-time alert cards with severity, timestamp, description
+- [ ] Alert rules table: Condition, threshold, notification channel, status
+- [ ] Model drift chart: Accuracy degradation over time
+- [ ] Anomaly detection events list
+
+**Deliverable**: Full RBAC system, enterprise integrations UI, audit trails, and monitoring.
+
+---
+
+## Phase 5: AI Playground (Week 3-4)
+
+### 5.1 Playground Page (`/playground`)
+
+- [ ] Split-pane layout: Left config, right chat
+- [ ] **Model Selection**: Dropdown of available models
+- [ ] **Parameters**: Temperature, max tokens, top-p sliders
+- [ ] **System Prompt**: Editable textarea
+- [ ] **Chat Interface**:
+  - User message input
+  - AI response with typing indicator
+  - Message history with clear button
+  - Copy/regenerate actions per message
+- [ ] **Metrics Panel**: Tokens used, latency, cost per request
+- [ ] **Compare Mode**: Side-by-side two models (bonus)
+
+### 5.2 Hugging Face Integration (Optional)
+
+- [ ] Integrate Hugging Face Inference API for real responses
+- [ ] Fallback to MSW mock if rate limited
+- [ ] Show "Powered by Hugging Face" badge
+
+**Deliverable**: Interactive prompt testing interface demonstrating AI/ML product surface skills.
+
+---
+
+## Phase 6: Polish & Performance (Week 4)
+
+### 6.1 Performance Optimizations
+
+- [ ] Use React Server Components for static layout parts
+- [ ] Dynamic imports for heavy chart components
+- [ ] Image optimization with `next/image`
+- [ ] Route prefetching for sidebar links
+- [ ] Add `loading.tsx` skeletons for all routes
+- [ ] Add `error.tsx` error boundaries
+- [ ] Implement `not-found.tsx` for 404s
+
+### 6.2 Accessibility
+
+- [ ] Keyboard navigation for sidebar, tables, modals
+- [ ] ARIA labels on all interactive elements
+- [ ] Focus visible states
+- [ ] Screen reader friendly data tables
+- [ ] Reduced motion support
+- [ ] Color contrast compliance (WCAG 2.1 AA)
+
+### 6.3 Testing
+
+- [ ] **Unit Tests** (Vitest):
+  - Utility functions (formatters, permissions)
+  - Zustand store actions
+  - Zod validation schemas
+- [ ] **Component Tests** (React Testing Library):
+  - Metric cards render correctly
+  - Table sorting/filtering works
+  - Form validation shows errors
+  - RBAC guards hide/show elements
+- [ ] **E2E Tests** (Playwright):
+  - Login flow
+  - Dashboard loads with data
+  - Model registry navigation
+  - Team invitation flow
+  - Playground prompt submission
+
+### 6.4 Documentation
+
+- [ ] Update README with:
+  - Project description (enterprise AI platform dashboard)
+  - Tech stack and architecture
+  - Setup instructions
+  - Mock API documentation
+  - Screenshots/GIFs of key features
+- [ ] Add `ARCHITECTURE.md` explaining data flow
+- [ ] Add `CONTRIBUTING.md` for future extension
+
+### 6.5 Deployment
+
+- [ ] Configure Vercel deployment
+- [ ] Set environment variables
+- [ ] Verify MSW works in production build (or use API routes fallback)
+- [ ] Add custom domain (optional)
+- [ ] Performance audit with Lighthouse (target: 90+ all categories)
+
+**Deliverable**: Production-ready dashboard deployed to Vercel with tests passing.
+
+---
+
+## Phase 7: Interview Preparation (Ongoing)
+
+### 7.1 Talking Points
+
+Prepare explanations for:
+
+- [ ] Why Next.js 16 App Router over Vite + React Router
+- [ ] How MSW enables backend-parallel development
+- [ ] RBAC implementation strategy (Zustand + route guards)
+- [ ] Performance optimizations (RSC, dynamic imports, caching)
+- [ ] How you'd swap MSW for a real Python/Go backend
+
+### 7.2 Live Demo Script
+
+- [ ] 30-second elevator pitch
+- [ ] 2-minute feature walkthrough (dashboard → models → teams → playground)
+- [ ] 1-minute architecture deep-dive
+- [ ] Q&A preparation (be ready to discuss trade-offs)
+
+### 7.3 Resume Update
+
+Update resume/portfolio to highlight:
+
+- [ ] "Enterprise AI Infrastructure Dashboard — Next.js 16, TypeScript, TanStack Query"
+- [ ] "Implemented RBAC with role-based UI rendering and API authorization"
+- [ ] "Built real-time monitoring with simulated streaming data and WebSocket patterns"
+- [ ] "Designed API contracts for GPU metrics, model registry, and deployment pipelines"
+
+---
+
+## File Checklist
+
+### Config Files
+
+- [ ] `next.config.js` — Static export, image config
+- [ ] `tsconfig.json` — Strict mode, path aliases
+- [ ] `tailwind.config.js` — Custom colors, fonts
+- [ ] `components.json` — shadcn/ui config
+- [ ] `vitest.config.ts` — Test setup
+- [ ] `playwright.config.ts` — E2E config
+- [ ] `.env.local` — Environment variables
+- [ ] `.env.example` — Template for others
+
+### Core App Files
+
+- [ ] `app/layout.tsx` — Root layout
+- [ ] `app/(dashboard)/layout.tsx` — Dashboard shell
+- [ ] `app/(dashboard)/dashboard/page.tsx` — Main dashboard
+- [ ] `app/(dashboard)/models/page.tsx` — Model registry
+- [ ] `app/(dashboard)/models/[id]/page.tsx` — Model detail
+- [ ] `app/(dashboard)/deployments/page.tsx` — Deployments
+- [ ] `app/(dashboard)/teams/page.tsx` — Team management
+- [ ] `app/(dashboard)/monitoring/page.tsx` — Monitoring
+- [ ] `app/(dashboard)/playground/page.tsx` — AI playground
+- [ ] `app/(dashboard)/integrations/page.tsx` — Integrations
+- [ ] `app/(dashboard)/settings/security/page.tsx` — Security settings
+- [ ] `app/(dashboard)/settings/billing/page.tsx` — Billing settings
+- [ ] `app/(dashboard)/settings/audit/page.tsx` — Audit logs
+- [ ] `app/login/page.tsx` — Login page
+
+### Components
+
+- [ ] `components/layout/Sidebar.tsx`
+- [ ] `components/layout/Topbar.tsx`
+- [ ] `components/layout/Breadcrumbs.tsx`
+- [ ] `components/layout/MobileNav.tsx`
+- [ ] `components/charts/LineChart.tsx`
+- [ ] `components/charts/AreaChart.tsx`
+- [ ] `components/charts/BarChart.tsx`
+- [ ] `components/charts/PieChart.tsx`
+- [ ] `components/charts/Sparkline.tsx`
+- [ ] `components/tables/DataTable.tsx`
+- [ ] `components/tables/Columns.tsx`
+- [ ] `components/forms/FormInput.tsx`
+- [ ] `components/forms/FormSelect.tsx`
+- [ ] `components/forms/FormSwitch.tsx`
+- [ ] `components/guards/RoleGuard.tsx`
+- [ ] `components/guards/PermissionGuard.tsx`
+
+### Hooks
+
+- [ ] `hooks/useAuth.ts`
+- [ ] `hooks/useGpuMetrics.ts`
+- [ ] `hooks/useGpuSummary.ts`
+- [ ] `hooks/useInferenceMetrics.ts`
+- [ ] `hooks/useModelRegistry.ts`
+- [ ] `hooks/useModelDetail.ts`
+- [ ] `hooks/useDeployments.ts`
+- [ ] `hooks/useDeploymentDetail.ts`
+- [ ] `hooks/useTeams.ts`
+- [ ] `hooks/useAuditLogs.ts`
+- [ ] `hooks/useBillingUsage.ts`
+- [ ] `hooks/useBillingInvoices.ts`
+- [ ] `hooks/usePlayground.ts`
+
+### Stores
+
+- [ ] `stores/authStore.ts`
+- [ ] `stores/uiStore.ts`
+- [ ] `stores/themeStore.ts`
+
+### Lib
+
+- [ ] `lib/api-client.ts`
+- [ ] `lib/permissions.ts`
+- [ ] `lib/validators.ts`
+- [ ] `lib/utils.ts`
+
+### Mocks
+
+- [ ] `mocks/browser.ts`
+- [ ] `mocks/server.ts`
+- [ ] `mocks/handlers.ts`
+- [ ] `mocks/data/gpu-metrics.ts`
+- [ ] `mocks/data/model-registry.ts`
+- [ ] `mocks/data/deployments.ts`
+- [ ] `mocks/data/teams.ts`
+- [ ] `mocks/data/audit-logs.ts`
+- [ ] `mocks/data/billing.ts`
+- [ ] `mocks/data/playground.ts`
+
+### Types
+
+- [ ] `types/api.ts`
+- [ ] `types/models.ts`
+- [ ] `types/auth.ts`
+
+### Tests
+
+- [ ] `tests/unit/utils.test.ts`
+- [ ] `tests/unit/permissions.test.ts`
+- [ ] `tests/unit/validators.test.ts`
+- [ ] `tests/e2e/login.spec.ts`
+- [ ] `tests/e2e/dashboard.spec.ts`
+- [ ] `tests/e2e/models.spec.ts`
+- [ ] `tests/e2e/teams.spec.ts`
+- [ ] `tests/e2e/playground.spec.ts`
+
+### Documentation
+
+- [ ] `README.md`
+- [ ] `ARCHITECTURE.md`
+- [ ] `CONTRIBUTING.md`
+
+---
+
+## Timeline Summary
+
+| Phase                  | Duration | Key Deliverable                          |
+| ---------------------- | -------- | ---------------------------------------- |
+| 1. Foundation          | Week 1   | Next.js 16 app with theme, layout, MSW   |
+| 2. Mock Data           | Week 1-2 | Full fake API with realistic data        |
+| 3. Dashboard Core      | Week 2   | Main dashboard, models, deployments      |
+| 4. Enterprise Features | Week 3   | RBAC, integrations, settings, monitoring |
+| 5. AI Playground       | Week 3-4 | Interactive prompt testing               |
+| 6. Polish & Deploy     | Week 4   | Tests, performance, Vercel deployment    |
+| 7. Interview Prep      | Ongoing  | Talking points, demo script, resume      |
+
+---
+
+## Success Criteria
+
+- [ ] Dashboard loads in under 2 seconds (Lighthouse performance 90+)
+- [ ] All routes have loading skeletons and error boundaries
+- [ ] RBAC correctly hides/shows UI based on role
+- [ ] MSW intercepts all API calls with realistic data
+- [ ] Charts are interactive (tooltips, zoom, time range toggle)
+- [ ] Tables support sorting, filtering, pagination
+- [ ] Forms have validation and error states
+- [ ] Dark/light mode toggle works across all pages
+- [ ] Mobile responsive (sidebar collapses, tables scroll)
+- [ ] All tests pass (unit + E2E)
+- [ ] README clearly explains the project and how to run it
+- [ ] Deployed to Vercel with custom URL
+
+---
+
+## Notes
+
+- **MSW in Production**: For Vercel deployment, MSW may not work in the browser. Have a fallback plan: either use Next.js API routes (`app/api/*`) that return the same mock data, or conditionally disable MSW and use the API routes.
+- **Type Safety**: Be strict with TypeScript. Every API response, every form value, every store state should be typed. This is a key signal for enterprise roles.
+- **Component Reusability**: Build generic table and chart components that accept data and config props. Don't hardcode specific data shapes into UI components.
+- **Accessibility First**: Don't bolt on a11y later. Build keyboard navigation and ARIA labels into components from the start.
+- **Git Commits**: Make meaningful commits as you build. A clean git history shows professional development practices.
