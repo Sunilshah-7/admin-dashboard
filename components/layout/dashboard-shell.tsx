@@ -18,6 +18,8 @@ import {
   Search,
   Settings,
   ShieldCheck,
+  ShoppingCart,
+  UserRound,
   Sun,
   Users,
 } from "lucide-react";
@@ -32,6 +34,8 @@ import { useUiStore } from "@/stores/ui-store";
 
 const navigationItems = [
   { href: "/dashboard", label: "Dashboard", icon: Gauge },
+  { href: "/users", label: "Users", icon: UserRound },
+  { href: "/products", label: "Products", icon: ShoppingCart },
   { href: "/models", label: "Models", icon: Cpu },
   { href: "/deployments", label: "Deployments", icon: GitBranch },
   { href: "/teams", label: "Teams", icon: Users },

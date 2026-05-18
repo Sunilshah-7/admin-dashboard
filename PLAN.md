@@ -157,9 +157,9 @@ Install the following shadcn/ui primitives:
 
 ### 1.8 Migrate Existing Assets
 
-- [ ] Port `DummyData.jsx` data into typed mock generators
-- [ ] Port existing page concepts into new route structure
-- [ ] Ensure all old routes redirect or are replaced
+- [x] Port `DummyData.jsx` data into typed mock generators
+- [x] Port existing page concepts into new route structure
+- [x] Ensure all old routes redirect or are replaced
 
 **Deliverable**: Running Next.js 16 app with shadcn/ui theme, sidebar layout, and MSW intercepting requests.
 

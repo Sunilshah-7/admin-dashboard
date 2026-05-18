@@ -1,5 +1,14 @@
 import { http, HttpResponse } from "msw";
 
+import {
+  getLegacyProduct,
+  getLegacyProducts,
+  getLegacyUser,
+  getLegacyUsers,
+  getProductSales,
+  getUserAnalytics,
+} from "@/mocks/data/legacy-dashboard";
+
 const handlers = [
   http.get("/api/health", () => {
     return HttpResponse.json({
@@ -65,6 +74,64 @@ const handlers = [
         limit: 20,
         total: 2,
       },
+    });
+  }),
+
+  http.get("/api/legacy/user-analytics", () => {
+    return HttpResponse.json({
+      data: getUserAnalytics(),
+    });
+  }),
+
+  http.get("/api/legacy/product-sales", () => {
+    return HttpResponse.json({
+      data: getProductSales(),
+    });
+  }),
+
+  http.get("/api/legacy/users", () => {
+    const users = getLegacyUsers();
+
+    return HttpResponse.json({
+      data: users,
+      meta: {
+        total: users.length,
+      },
+    });
+  }),
+
+  http.get("/api/legacy/users/:userId", ({ params }) => {
+    const user = getLegacyUser(String(params.userId));
+
+    if (!user) {
+      return HttpResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    return HttpResponse.json({
+      data: user,
+    });
+  }),
+
+  http.get("/api/legacy/products", () => {
+    const products = getLegacyProducts();
+
+    return HttpResponse.json({
+      data: products,
+      meta: {
+        total: products.length,
+      },
+    });
+  }),
+
+  http.get("/api/legacy/products/:productId", ({ params }) => {
+    const product = getLegacyProduct(String(params.productId));
+
+    if (!product) {
+      return HttpResponse.json({ error: "Product not found" }, { status: 404 });
+    }
+
+    return HttpResponse.json({
+      data: product,
     });
   }),
 ];
