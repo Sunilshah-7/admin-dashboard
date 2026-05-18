@@ -1,10 +1,13 @@
 "use client";
 
 import * as React from "react";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ThemeProvider, useTheme } from "next-themes";
 
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { createQueryClient } from "@/lib/query-client";
 import { useThemeStore, type ResolvedTheme, type ThemePreference } from "@/stores/theme-store";
 
 function ThemeStoreSync() {
@@ -28,14 +31,19 @@ function ThemeStoreSync() {
 }
 
 function Providers({ children }: { children: React.ReactNode }) {
+  const [queryClient] = React.useState(() => createQueryClient());
+
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-      <TooltipProvider>
-        <ThemeStoreSync />
-        {children}
-        <Toaster richColors closeButton />
-      </TooltipProvider>
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+        <TooltipProvider>
+          <ThemeStoreSync />
+          {children}
+          <Toaster richColors closeButton />
+        </TooltipProvider>
+      </ThemeProvider>
+      {process.env.NODE_ENV === "development" ? <ReactQueryDevtools initialIsOpen={false} /> : null}
+    </QueryClientProvider>
   );
 }
 

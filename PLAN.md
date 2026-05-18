@@ -143,9 +143,9 @@ Install the following shadcn/ui primitives:
 
 ### 1.6 Set Up TanStack Query
 
-- [ ] Create `QueryClient` with default options (staleTime, refetchInterval)
-- [ ] Wrap app in `QueryClientProvider`
-- [ ] Configure devtools (show in development only)
+- [x] Create `QueryClient` with default options (staleTime, refetchInterval)
+- [x] Wrap app in `QueryClientProvider`
+- [x] Configure devtools (show in development only)
 
 ### 1.7 Set Up MSW (Mock Service Worker)
 
