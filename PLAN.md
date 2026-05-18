@@ -106,26 +106,26 @@ reflection-dashboard/
 
 ### 1.2 Install Core Dependencies
 
-- [ ] shadcn/ui: `npx shadcn@latest init`
-- [ ] State: `zustand`, `@tanstack/react-query`
-- [ ] Tables: `@tanstack/react-table`
-- [ ] Charts: `recharts`, `@tremor/react`
-- [ ] Forms: `react-hook-form`, `zod`, `@hookform/resolvers`
-- [ ] Mock: `msw`, `@faker-js/faker`
-- [ ] Utils: `date-fns`, `lucide-react`
-- [ ] Testing: `vitest`, `@testing-library/react`, `@testing-library/jest-dom`, `playwright`
+- [x] shadcn/ui: `npx shadcn@latest init`
+- [x] State: `zustand`, `@tanstack/react-query`
+- [x] Tables: `@tanstack/react-table`
+- [x] Charts: `recharts`, `@tremor/react`
+- [x] Forms: `react-hook-form`, `zod`, `@hookform/resolvers`
+- [x] Mock: `msw`, `@faker-js/faker`
+- [x] Utils: `date-fns`, `lucide-react`
+- [x] Testing: `vitest`, `@testing-library/react`, `@testing-library/jest-dom`, `playwright`
 
 ### 1.3 Set Up shadcn/ui Components
 
 Install the following shadcn/ui primitives:
 
-- [ ] Button, Card, Badge, Avatar, Separator, Skeleton
-- [ ] Dialog, Sheet, DropdownMenu, Popover, Tooltip
-- [ ] Table, DataTable (custom wrapper)
-- [ ] Form, Input, Textarea, Select, Switch, Checkbox
-- [ ] Tabs, Accordion, Breadcrumb, Command (for CMD+K)
-- [ ] Chart (if available) or custom Tremor wrappers
-- [ ] Sonner (toast notifications)
+- [x] Button, Card, Badge, Avatar, Separator, Skeleton
+- [x] Dialog, Sheet, DropdownMenu, Popover, Tooltip
+- [x] Table, DataTable (custom wrapper)
+- [x] Form, Input, Textarea, Select, Switch, Checkbox
+- [x] Tabs, Accordion, Breadcrumb, Command (for CMD+K)
+- [x] Chart (if available) or custom Tremor wrappers
+- [x] Sonner (toast notifications)
 
 ### 1.4 Configure Theme & Layout
 
