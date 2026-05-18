@@ -137,9 +137,9 @@ Install the following shadcn/ui primitives:
 
 ### 1.5 Set Up Zustand Stores
 
-- [ ] `authStore`: user object, roles, permissions, login/logout actions
-- [ ] `uiStore`: sidebar open/closed, active modal, toast queue
-- [ ] `themeStore`: theme preference (sync with next-themes)
+- [x] `authStore`: user object, roles, permissions, login/logout actions
+- [x] `uiStore`: sidebar open/closed, active modal, toast queue
+- [x] `themeStore`: theme preference (sync with next-themes)
 
 ### 1.6 Set Up TanStack Query
 

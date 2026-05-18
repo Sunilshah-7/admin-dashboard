@@ -27,6 +27,8 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { useThemeStore } from "@/stores/theme-store";
+import { useUiStore } from "@/stores/ui-store";
 
 const navigationItems = [
   { href: "/dashboard", label: "Dashboard", icon: Gauge },
@@ -40,7 +42,16 @@ const navigationItems = [
 
 function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
+  const storedTheme = useThemeStore((state) => state.resolvedTheme);
+  const setPreference = useThemeStore((state) => state.setPreference);
+  const isDark = (resolvedTheme ?? storedTheme) === "dark";
+
+  function handleToggleTheme() {
+    const nextTheme = isDark ? "light" : "dark";
+
+    setPreference(nextTheme);
+    setTheme(nextTheme);
+  }
 
   return (
     <Button
@@ -48,7 +59,7 @@ function ThemeToggle() {
       variant="ghost"
       size="icon"
       aria-label="Toggle theme"
-      onClick={() => setTheme(isDark ? "light" : "dark")}
+      onClick={handleToggleTheme}
     >
       {isDark ? <Sun className="size-4" /> : <Moon className="size-4" />}
     </Button>
@@ -130,7 +141,8 @@ function Topbar({
   collapsed: boolean;
   onToggleCollapsed: () => void;
 }) {
-  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const mobileOpen = useUiStore((state) => state.isMobileSidebarOpen);
+  const setMobileOpen = useUiStore((state) => state.setMobileSidebarOpen);
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/80 lg:px-6">
@@ -184,7 +196,8 @@ function Topbar({
 }
 
 function DashboardShell({ children }: { children: React.ReactNode }) {
-  const [collapsed, setCollapsed] = React.useState(false);
+  const collapsed = useUiStore((state) => state.isSidebarCollapsed);
+  const toggleCollapsed = useUiStore((state) => state.toggleSidebarCollapsed);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -202,7 +215,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
           collapsed ? "lg:pl-16" : "lg:pl-72",
         )}
       >
-        <Topbar collapsed={collapsed} onToggleCollapsed={() => setCollapsed((value) => !value)} />
+        <Topbar collapsed={collapsed} onToggleCollapsed={toggleCollapsed} />
         <main className="mx-auto w-full max-w-7xl p-4 sm:p-6 lg:p-8">{children}</main>
       </div>
     </div>
