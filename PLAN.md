@@ -129,11 +129,11 @@ Install the following shadcn/ui primitives:
 
 ### 1.4 Configure Theme & Layout
 
-- [ ] Set up `next-themes` for dark/light mode
-- [ ] Create enterprise color palette (slate/blue/emerald/amber/rose)
-- [ ] Build root layout with font (Inter), metadata, providers
-- [ ] Build dashboard layout: collapsible sidebar, topbar, main content area
-- [ ] Add responsive breakpoints (mobile sidebar drawer)
+- [x] Set up `next-themes` for dark/light mode
+- [x] Create enterprise color palette (slate/blue/emerald/amber/rose)
+- [x] Build root layout with font (Inter), metadata, providers
+- [x] Build dashboard layout: collapsible sidebar, topbar, main content area
+- [x] Add responsive breakpoints (mobile sidebar drawer)
 
 ### 1.5 Set Up Zustand Stores
 
