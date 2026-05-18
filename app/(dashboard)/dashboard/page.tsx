@@ -1,5 +1,6 @@
 import { Activity, Cpu, DollarSign, Gauge } from "lucide-react";
 
+import { MockApiStatus } from "@/components/dashboard/mock-api-status";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -39,7 +40,10 @@ export default function DashboardPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <Badge variant="secondary">Foundation</Badge>
+          <div className="flex flex-wrap gap-2">
+            <Badge variant="secondary">Foundation</Badge>
+            <MockApiStatus />
+          </div>
           <h2 className="mt-3 text-2xl font-semibold tracking-tight">Cluster overview</h2>
           <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
             The dashboard shell is ready for GPU metrics, model registry activity, deployments, and

@@ -5,6 +5,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ThemeProvider, useTheme } from "next-themes";
 
+import { MswProvider } from "@/components/msw-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { createQueryClient } from "@/lib/query-client";
@@ -38,7 +39,7 @@ function Providers({ children }: { children: React.ReactNode }) {
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
         <TooltipProvider>
           <ThemeStoreSync />
-          {children}
+          <MswProvider>{children}</MswProvider>
           <Toaster richColors closeButton />
         </TooltipProvider>
       </ThemeProvider>

@@ -61,7 +61,8 @@ function ThemeToggle() {
       aria-label="Toggle theme"
       onClick={handleToggleTheme}
     >
-      {isDark ? <Sun className="size-4" /> : <Moon className="size-4" />}
+      <Sun className="hidden size-4 dark:block" />
+      <Moon className="size-4 dark:hidden" />
     </Button>
   );
 }

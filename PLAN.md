@@ -149,11 +149,11 @@ Install the following shadcn/ui primitives:
 
 ### 1.7 Set Up MSW (Mock Service Worker)
 
-- [ ] Initialize MSW: `npx msw init public/`
-- [ ] Create `mocks/browser.ts` and `mocks/server.ts`
-- [ ] Create `mocks/handlers.ts` with placeholder routes
-- [ ] Conditionally start MSW in development mode
-- [ ] Verify API calls are intercepted in Network tab
+- [x] Initialize MSW: `npx msw init public/`
+- [x] Create `mocks/browser.ts` and `mocks/server.ts`
+- [x] Create `mocks/handlers.ts` with placeholder routes
+- [x] Conditionally start MSW in development mode
+- [x] Verify API calls are intercepted in Network tab
 
 ### 1.8 Migrate Existing Assets
 
