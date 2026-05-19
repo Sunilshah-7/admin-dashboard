@@ -268,18 +268,18 @@ Build the landing dashboard with these sections:
 
 #### Widgets
 
-- [ ] **Active Training Jobs** — List of running jobs with progress bars
-- [ ] **Recent Deployments** — Table of last 5 deployments with status badges
-- [ ] **System Alerts** — Alert cards (critical, warning, info) with dismiss action
+- [x] **Active Training Jobs** — List of running jobs with progress bars
+- [x] **Recent Deployments** — Table of last 5 deployments with status badges
+- [x] **System Alerts** — Alert cards (critical, warning, info) with dismiss action
 
 ### 3.2 Model Registry Page (`/models`)
 
-- [ ] Data table with columns: Name, Version, Status, Type, Latency, Last Deployed, Actions
-- [ ] Filters: Status (deployed/training/archived), Type (LLM/Vision/Embedding)
-- [ ] Search by name
-- [ ] Row actions: View details, Deploy, Archive
-- [ ] Bulk actions: Multi-select deploy, delete
-- [ ] "Deploy New Model" button → opens wizard
+- [x] Data table with columns: Name, Version, Status, Type, Latency, Last Deployed, Actions
+- [x] Filters: Status (deployed/training/archived), Type (LLM/Vision/Embedding)
+- [x] Search by name
+- [x] Row actions: View details, Deploy, Archive
+- [x] Bulk actions: Multi-select deploy, delete
+- [x] "Deploy New Model" button → opens wizard
 
 ### 3.3 Model Detail Page (`/models/:id`)
 

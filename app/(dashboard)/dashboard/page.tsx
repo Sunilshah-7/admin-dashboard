@@ -2,7 +2,19 @@
 
 import { useMemo, useState } from "react";
 import type * as React from "react";
-import { Activity, Cpu, DollarSign, Gauge, Minus, TrendingDown, TrendingUp } from "lucide-react";
+import {
+  Activity,
+  CircleAlert,
+  Cpu,
+  DollarSign,
+  Gauge,
+  Info,
+  Minus,
+  TrendingDown,
+  TrendingUp,
+  TriangleAlert,
+  X,
+} from "lucide-react";
 import {
   Area,
   AreaChart,
@@ -20,9 +32,18 @@ import {
 
 import { MockApiStatus } from "@/components/dashboard/mock-api-status";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   useBillingUsage,
@@ -59,6 +80,61 @@ const gpuIntervals: Record<TimeRange, number> = {
 };
 
 const costBreakdownColors = ["var(--chart-1)", "var(--chart-2)", "var(--chart-4)"];
+
+const activeTrainingJobs = [
+  {
+    eta: "18 min",
+    id: "train_4096",
+    model: "Reflect LLM 70B",
+    owner: "Maya Chen",
+    progress: 78,
+    stage: "Evaluation",
+  },
+  {
+    eta: "42 min",
+    id: "train_4097",
+    model: "Atlas Vision 12B",
+    owner: "Priya Nair",
+    progress: 54,
+    stage: "Fine-tuning",
+  },
+  {
+    eta: "1h 12m",
+    id: "train_4098",
+    model: "Vector Embed 8B",
+    owner: "Noah Kim",
+    progress: 31,
+    stage: "Data validation",
+  },
+];
+
+type SystemAlert = {
+  id: string;
+  message: string;
+  severity: "critical" | "info" | "warning";
+  title: string;
+};
+
+const initialAlerts: SystemAlert[] = [
+  {
+    id: "alert_capacity",
+    message: "Primary H100 pool is above 90% scheduled capacity.",
+    severity: "critical",
+    title: "GPU capacity pressure",
+  },
+  {
+    id: "alert_training_queue",
+    message: "Training queue latency is above the weekly baseline.",
+    severity: "warning",
+    title: "Training queue elevated",
+  },
+  {
+    id: "alert_endpoints",
+    message: "All production inference endpoints are healthy.",
+    severity: "info",
+    title: "Serving fleet healthy",
+  },
+];
 
 function formatPercent(value: number | null | undefined) {
   if (value === null || value === undefined || Number.isNaN(value)) {
@@ -179,6 +255,60 @@ function getCostBreakdown(usage: BillingUsage | null | undefined) {
   ];
 }
 
+function formatRelativeTime(timestamp: string) {
+  const startedAt = new Date(timestamp);
+  const diffMs = Date.now() - startedAt.getTime();
+  const diffMinutes = Math.max(1, Math.round(diffMs / 60_000));
+
+  if (diffMinutes < 60) {
+    return `${diffMinutes}m ago`;
+  }
+
+  const diffHours = Math.round(diffMinutes / 60);
+
+  if (diffHours < 24) {
+    return `${diffHours}h ago`;
+  }
+
+  return `${Math.round(diffHours / 24)}d ago`;
+}
+
+function getDeploymentBadgeVariant(status: Deployment["status"]) {
+  if (status === "failed" || status === "canceled") {
+    return "destructive" as const;
+  }
+
+  if (status === "succeeded") {
+    return "secondary" as const;
+  }
+
+  return "outline" as const;
+}
+
+function getAlertTone(severity: SystemAlert["severity"]) {
+  if (severity === "critical") {
+    return {
+      className:
+        "border-destructive/30 bg-destructive/10 text-destructive dark:border-destructive/40",
+      icon: CircleAlert,
+    };
+  }
+
+  if (severity === "warning") {
+    return {
+      className:
+        "border-amber-200 bg-amber-50 text-amber-950 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-100",
+      icon: TriangleAlert,
+    };
+  }
+
+  return {
+    className:
+      "border-emerald-200 bg-emerald-50 text-emerald-950 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-100",
+    icon: Info,
+  };
+}
+
 function MetricCard({
   children,
   description,
@@ -246,6 +376,7 @@ function MetricCard({
 
 export default function DashboardPage() {
   const [gpuRange, setGpuRange] = useState<TimeRange>("24h");
+  const [visibleAlerts, setVisibleAlerts] = useState(initialAlerts);
   const gpuSummaryQuery = useGpuSummary();
   const gpuMetricsQuery = useGpuMetrics(gpuRange, gpuIntervals[gpuRange]);
   const inferenceMetricsQuery = useInferenceMetrics();
@@ -271,6 +402,11 @@ export default function DashboardPage() {
     () => getCostBreakdown(billingUsageQuery.data),
     [billingUsageQuery.data],
   );
+  const recentDeployments = useMemo(() => {
+    return [...(deploymentsQuery.data?.data ?? [])]
+      .sort((a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime())
+      .slice(0, 5);
+  }, [deploymentsQuery.data?.data]);
   const latencyDelta =
     latestInferenceMetric && previousInferenceMetric
       ? latestInferenceMetric.p95LatencyMs - previousInferenceMetric.p95LatencyMs
@@ -667,6 +803,131 @@ export default function DashboardPage() {
                 </div>
               ))}
             </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      <section className="grid gap-4 xl:grid-cols-[1fr_1.35fr_1fr]">
+        <Card>
+          <CardHeader>
+            <CardTitle>Active Training Jobs</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {activeTrainingJobs.map((job) => (
+              <div key={job.id} className="space-y-2">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="truncate text-sm font-medium">{job.model}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {job.stage} by {job.owner}
+                    </div>
+                  </div>
+                  <div className="text-right text-xs tabular-nums text-muted-foreground">
+                    <div>{job.progress}%</div>
+                    <div>{job.eta}</div>
+                  </div>
+                </div>
+                <div
+                  aria-label={`${job.model} training progress`}
+                  aria-valuemax={100}
+                  aria-valuemin={0}
+                  aria-valuenow={job.progress}
+                  className="h-2 overflow-hidden rounded-full bg-muted"
+                  role="progressbar"
+                >
+                  <div
+                    className="h-full rounded-full bg-primary transition-[width]"
+                    style={{ width: `${job.progress}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Deployments</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Model</TableHead>
+                  <TableHead>Environment</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Started</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {recentDeployments.map((deployment) => (
+                  <TableRow key={deployment.id}>
+                    <TableCell className="max-w-52 truncate font-medium">
+                      {deployment.modelName}
+                    </TableCell>
+                    <TableCell className="capitalize">{deployment.environment}</TableCell>
+                    <TableCell>
+                      <Badge
+                        className="rounded-md capitalize"
+                        variant={getDeploymentBadgeVariant(deployment.status)}
+                      >
+                        {deployment.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right text-muted-foreground">
+                      {formatRelativeTime(deployment.startedAt)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>System Alerts</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {visibleAlerts.length ? (
+              visibleAlerts.map((alert) => {
+                const tone = getAlertTone(alert.severity);
+                const AlertIcon = tone.icon;
+
+                return (
+                  <div
+                    key={alert.id}
+                    className={cn("rounded-md border p-3 text-sm", tone.className)}
+                  >
+                    <div className="flex gap-3">
+                      <AlertIcon className="mt-0.5 size-4 shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <div className="font-medium">{alert.title}</div>
+                        <div className="mt-1 text-xs opacity-85">{alert.message}</div>
+                      </div>
+                      <Button
+                        aria-label={`Dismiss ${alert.title}`}
+                        className="-mr-1 -mt-1"
+                        onClick={() =>
+                          setVisibleAlerts((currentAlerts) =>
+                            currentAlerts.filter((item) => item.id !== alert.id),
+                          )
+                        }
+                        size="icon-xs"
+                        type="button"
+                        variant="ghost"
+                      >
+                        <X className="size-3.5" />
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="rounded-md border border-dashed p-6 text-center text-sm text-muted-foreground">
+                No active alerts.
+              </div>
+            )}
           </CardContent>
         </Card>
       </section>
