@@ -304,11 +304,11 @@ Build the landing dashboard with these sections:
 
 ### 4.1 RBAC & Team Management (`/teams`)
 
-- [ ] Team table: Name, Email, Role, Status, Last Active, Actions
-- [ ] Role badges: Admin (red), Engineer (blue), Viewer (gray)
-- [ ] Invite member modal: Email, role selection, workspace assignment
-- [ ] Edit member drawer: Change role, deactivate account
-- [ ] Permission matrix view (read-only): What each role can access
+- [x] Team table: Name, Email, Role, Status, Last Active, Actions
+- [x] Role badges: Admin (red), Engineer (blue), Viewer (gray)
+- [x] Invite member modal: Email, role selection, workspace assignment
+- [x] Edit member drawer: Change role, deactivate account
+- [x] Permission matrix view (read-only): What each role can access
 
 ### 4.2 Role-Based Sidebar
 
