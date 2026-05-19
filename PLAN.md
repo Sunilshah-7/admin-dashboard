@@ -171,76 +171,76 @@ Install the following shadcn/ui primitives:
 
 Create `types/api.ts` with interfaces for all endpoints:
 
-- [ ] `ApiResponse<T>` wrapper with data, meta, error fields
-- [ ] `PaginatedResponse<T>` with page, limit, total, hasMore
-- [ ] `GpuMetric`, `GpuMetricSeries` for time-series data
-- [ ] `Model`, `ModelVersion`, `ModelDeployment` for registry
-- [ ] `Deployment`, `DeploymentStage`, `DeploymentLog` for CI/CD
-- [ ] `TeamMember`, `Role`, `Permission` for RBAC
-- [ ] `AuditLogEntry` for compliance
-- [ ] `BillingUsage`, `BillingInvoice` for cost tracking
-- [ ] `PlaygroundMessage`, `PlaygroundSession` for prompt testing
+- [x] `ApiResponse<T>` wrapper with data, meta, error fields
+- [x] `PaginatedResponse<T>` with page, limit, total, hasMore
+- [x] `GpuMetric`, `GpuMetricSeries` for time-series data
+- [x] `Model`, `ModelVersion`, `ModelDeployment` for registry
+- [x] `Deployment`, `DeploymentStage`, `DeploymentLog` for CI/CD
+- [x] `TeamMember`, `Role`, `Permission` for RBAC
+- [x] `AuditLogEntry` for compliance
+- [x] `BillingUsage`, `BillingInvoice` for cost tracking
+- [x] `PlaygroundMessage`, `PlaygroundSession` for prompt testing
 
 ### 2.2 Build Data Generators
 
 Create faker-powered generators in `mocks/data/`:
 
-- [ ] `gpu-metrics.ts`: Generate 24h of 5-minute interval GPU data (utilization, memory, temp, power)
-- [ ] `model-registry.ts`: Generate 10-20 AI models with versions, statuses, metadata
-- [ ] `deployments.ts`: Generate 15-30 deployment pipelines with stages
-- [ ] `teams.ts`: Generate 8-15 team members with roles (admin, engineer, viewer)
-- [ ] `audit-logs.ts`: Generate 50+ audit entries (login, permission change, deployment)
-- [ ] `billing.ts`: Generate monthly usage data with cost breakdowns
-- [ ] `playground.ts`: Generate mock LLM responses for prompt testing
+- [x] `gpu-metrics.ts`: Generate 24h of 5-minute interval GPU data (utilization, memory, temp, power)
+- [x] `model-registry.ts`: Generate 10-20 AI models with versions, statuses, metadata
+- [x] `deployments.ts`: Generate 15-30 deployment pipelines with stages
+- [x] `teams.ts`: Generate 8-15 team members with roles (admin, engineer, viewer)
+- [x] `audit-logs.ts`: Generate 50+ audit entries (login, permission change, deployment)
+- [x] `billing.ts`: Generate monthly usage data with cost breakdowns
+- [x] `playground.ts`: Generate mock LLM responses for prompt testing
 
 ### 2.3 Build MSW Handlers
 
 Create full REST API in `mocks/handlers.ts`:
 
-- [ ] `GET /api/metrics/gpu` — GPU time-series metrics
-- [ ] `GET /api/metrics/gpu/summary` — Current cluster summary
-- [ ] `GET /api/metrics/inference` — Inference latency & throughput
-- [ ] `GET /api/models` — List models (paginated, filterable)
-- [ ] `GET /api/models/:id` — Model detail
-- [ ] `POST /api/models/:id/deploy` — Trigger deployment
-- [ ] `GET /api/deployments` — List deployments
-- [ ] `GET /api/deployments/:id` — Deployment detail with logs
-- [ ] `GET /api/deployments/:id/logs` — Streaming logs (SSE mock)
-- [ ] `GET /api/teams` — List team members
-- [ ] `POST /api/teams/invite` — Invite new member
-- [ ] `PATCH /api/teams/:id/role` — Update role
-- [ ] `GET /api/audit-logs` — Audit trail (paginated)
-- [ ] `GET /api/billing/usage` — Current period usage
-- [ ] `GET /api/billing/invoices` — Invoice history
-- [ ] `POST /api/playground/completion` — Mock LLM completion
-- [ ] `POST /api/auth/login` — Mock login
-- [ ] `POST /api/auth/logout` — Mock logout
-- [ ] `GET /api/auth/me` — Current user
+- [x] `GET /api/metrics/gpu` — GPU time-series metrics
+- [x] `GET /api/metrics/gpu/summary` — Current cluster summary
+- [x] `GET /api/metrics/inference` — Inference latency & throughput
+- [x] `GET /api/models` — List models (paginated, filterable)
+- [x] `GET /api/models/:id` — Model detail
+- [x] `POST /api/models/:id/deploy` — Trigger deployment
+- [x] `GET /api/deployments` — List deployments
+- [x] `GET /api/deployments/:id` — Deployment detail with logs
+- [x] `GET /api/deployments/:id/logs` — Streaming logs (SSE mock)
+- [x] `GET /api/teams` — List team members
+- [x] `POST /api/teams/invite` — Invite new member
+- [x] `PATCH /api/teams/:id/role` — Update role
+- [x] `GET /api/audit-logs` — Audit trail (paginated)
+- [x] `GET /api/billing/usage` — Current period usage
+- [x] `GET /api/billing/invoices` — Invoice history
+- [x] `POST /api/playground/completion` — Mock LLM completion
+- [x] `POST /api/auth/login` — Mock login
+- [x] `POST /api/auth/logout` — Mock logout
+- [x] `GET /api/auth/me` — Current user
 
 ### 2.4 Build API Client
 
 Create `lib/api-client.ts`:
 
-- [ ] Typed fetch wrapper with base URL, headers, error handling
-- [ ] Request/response interceptors for auth tokens
-- [ ] Standardized error formatting
-- [ ] Support for query params, pagination, filtering
+- [x] Typed fetch wrapper with base URL, headers, error handling
+- [x] Request/response interceptors for auth tokens
+- [x] Standardized error formatting
+- [x] Support for query params, pagination, filtering
 
 ### 2.5 Build TanStack Query Hooks
 
 Create hooks in `hooks/`:
 
-- [ ] `useGpuMetrics(timeRange)` — Returns time-series data, auto-refetch
-- [ ] `useGpuSummary()` — Returns current cluster snapshot
-- [ ] `useInferenceMetrics()` — Returns latency/throughput data
-- [ ] `useModelRegistry(filters)` — Returns paginated model list
-- [ ] `useModelDetail(id)` — Returns single model with versions
-- [ ] `useDeployments()` — Returns deployment list
-- [ ] `useDeploymentDetail(id)` — Returns deployment with stages
-- [ ] `useTeams()` — Returns team members
-- [ ] `useAuditLogs(pagination)` — Returns audit trail
-- [ ] `useBillingUsage()` — Returns current usage
-- [ ] `usePlayground()` — Returns prompt testing state + mutation
+- [x] `useGpuMetrics(timeRange)` — Returns time-series data, auto-refetch
+- [x] `useGpuSummary()` — Returns current cluster snapshot
+- [x] `useInferenceMetrics()` — Returns latency/throughput data
+- [x] `useModelRegistry(filters)` — Returns paginated model list
+- [x] `useModelDetail(id)` — Returns single model with versions
+- [x] `useDeployments()` — Returns deployment list
+- [x] `useDeploymentDetail(id)` — Returns deployment with stages
+- [x] `useTeams()` — Returns team members
+- [x] `useAuditLogs(pagination)` — Returns audit trail
+- [x] `useBillingUsage()` — Returns current usage
+- [x] `usePlayground()` — Returns prompt testing state + mutation
 
 **Deliverable**: All API endpoints returning realistic fake data, consumed by typed hooks with loading/error states.
 

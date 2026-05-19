@@ -1,19 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-type Role = "admin" | "engineer" | "viewer";
-
-type Permission =
-  | "dashboard:read"
-  | "models:read"
-  | "models:write"
-  | "deployments:read"
-  | "deployments:write"
-  | "teams:read"
-  | "teams:write"
-  | "monitoring:read"
-  | "integrations:manage"
-  | "settings:manage";
+import type { Permission, Role } from "@/types/api";
 
 type AuthUser = {
   id: string;
