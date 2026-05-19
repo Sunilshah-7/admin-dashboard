@@ -291,10 +291,10 @@ Build the landing dashboard with these sections:
 
 ### 3.4 Deployments Page (`/deployments`)
 
-- [ ] Pipeline view: Cards showing stages (Build → Test → Deploy → Verify)
-- [ ] List view: Table with commit SHA, branch, environment, status, duration
-- [ ] Filter by environment (staging, production)
-- [ ] Deployment detail slide-out with logs
+- [x] Pipeline view: Cards showing stages (Build → Test → Deploy → Verify)
+- [x] List view: Table with commit SHA, branch, environment, status, duration
+- [x] Filter by environment (staging, production)
+- [x] Deployment detail slide-out with logs
 
 **Deliverable**: Fully functional dashboard with realistic data, charts, and tables.
 
