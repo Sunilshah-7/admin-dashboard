@@ -254,10 +254,10 @@ Build the landing dashboard with these sections:
 
 #### Metric Cards (FeaturedInfo replacement)
 
-- [ ] **GPU Utilization** — Current average % with trend indicator
-- [ ] **Active Models** — Count of deployed models with status
-- [ ] **Inference Latency (p95)** — Current latency with sparkline
-- [ ] **Monthly Compute Cost** — Current spend vs. budget
+- [x] **GPU Utilization** — Current average % with trend indicator
+- [x] **Active Models** — Count of deployed models with status
+- [x] **Inference Latency (p95)** — Current latency with sparkline
+- [x] **Monthly Compute Cost** — Current spend vs. budget
 
 #### Charts
 
