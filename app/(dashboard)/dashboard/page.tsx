@@ -1,23 +1,39 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import type * as React from "react";
 import { Activity, Cpu, DollarSign, Gauge, Minus, TrendingDown, TrendingUp } from "lucide-react";
-import { Line, LineChart, XAxis, YAxis } from "recharts";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 import { MockApiStatus } from "@/components/dashboard/mock-api-status";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   useBillingUsage,
+  useDeployments,
   useGpuMetrics,
   useGpuSummary,
   useInferenceMetrics,
   useModelRegistry,
 } from "@/hooks";
 import { cn } from "@/lib/utils";
-import type { BillingUsage, GpuMetric, Model } from "@/types/api";
+import type { BillingUsage, Deployment, GpuMetric, Model, TimeRange } from "@/types/api";
 
 const currencyFormatter = new Intl.NumberFormat("en-US", {
   currency: "USD",
@@ -25,6 +41,24 @@ const currencyFormatter = new Intl.NumberFormat("en-US", {
   notation: "compact",
   style: "currency",
 });
+
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+});
+
+const timeFormatter = new Intl.DateTimeFormat("en-US", {
+  hour: "numeric",
+  minute: "2-digit",
+});
+
+const gpuIntervals: Record<TimeRange, number> = {
+  "24h": 30,
+  "7d": 360,
+  "30d": 1440,
+};
+
+const costBreakdownColors = ["var(--chart-1)", "var(--chart-2)", "var(--chart-4)"];
 
 function formatPercent(value: number | null | undefined) {
   if (value === null || value === undefined || Number.isNaN(value)) {
@@ -83,6 +117,66 @@ function getBudgetPercent(usage: BillingUsage | null | undefined) {
   }
 
   return (usage.totalCostUsd / usage.budgetUsd) * 100;
+}
+
+function formatTimeLabel(timestamp: string, range: TimeRange = "24h") {
+  const date = new Date(timestamp);
+
+  if (range === "24h") {
+    return timeFormatter.format(date);
+  }
+
+  return dateFormatter.format(date);
+}
+
+function getGpuUtilizationSeries(metrics: GpuMetric[] = [], range: TimeRange) {
+  const utilizationByTimestamp = new Map<string, number[]>();
+
+  metrics.forEach((metric) => {
+    const values = utilizationByTimestamp.get(metric.timestamp) ?? [];
+
+    values.push(metric.utilizationPercent);
+    utilizationByTimestamp.set(metric.timestamp, values);
+  });
+
+  return Array.from(utilizationByTimestamp.entries()).map(([timestamp, values]) => ({
+    label: formatTimeLabel(timestamp, range),
+    utilization: Math.round(average(values)),
+  }));
+}
+
+function getDeploymentActivity(deployments: Deployment[] = []) {
+  const days = Array.from({ length: 14 }, (_, index) => {
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+    date.setDate(date.getDate() - (13 - index));
+
+    return date;
+  });
+
+  const deploymentsByDay = deployments.reduce((totals, deployment) => {
+    const key = new Date(deployment.startedAt).toISOString().slice(0, 10);
+    totals.set(key, (totals.get(key) ?? 0) + 1);
+
+    return totals;
+  }, new Map<string, number>());
+
+  return days.map((date) => {
+    const key = date.toISOString().slice(0, 10);
+
+    return {
+      date: dateFormatter.format(date),
+      deployments: deploymentsByDay.get(key) ?? 0,
+    };
+  });
+}
+
+function getCostBreakdown(usage: BillingUsage | null | undefined) {
+  return [
+    { name: "Training", value: usage?.trainingCostUsd ?? 0 },
+    { name: "Inference", value: usage?.inferenceCostUsd ?? 0 },
+    { name: "Storage", value: usage?.storageCostUsd ?? 0 },
+  ];
 }
 
 function MetricCard({
@@ -151,17 +245,32 @@ function MetricCard({
 }
 
 export default function DashboardPage() {
+  const [gpuRange, setGpuRange] = useState<TimeRange>("24h");
   const gpuSummaryQuery = useGpuSummary();
-  const gpuMetricsQuery = useGpuMetrics("24h", 30);
+  const gpuMetricsQuery = useGpuMetrics(gpuRange, gpuIntervals[gpuRange]);
   const inferenceMetricsQuery = useInferenceMetrics();
   const modelRegistryQuery = useModelRegistry({ limit: 100, status: "deployed" });
+  const deploymentsQuery = useDeployments({ limit: 100 });
   const billingUsageQuery = useBillingUsage();
 
+  const inferenceMetrics = inferenceMetricsQuery.data ?? [];
   const gpuTrend = getGpuTrend(gpuMetricsQuery.data?.metrics);
   const latestInferenceMetric = inferenceMetricsQuery.data?.at(-1);
   const previousInferenceMetric = inferenceMetricsQuery.data?.at(-2);
   const deployedModels = modelRegistryQuery.data?.data ?? [];
   const modelDeploymentStatus = getModelDeploymentStatus(deployedModels);
+  const gpuUtilizationSeries = useMemo(
+    () => getGpuUtilizationSeries(gpuMetricsQuery.data?.metrics ?? [], gpuRange),
+    [gpuMetricsQuery.data?.metrics, gpuRange],
+  );
+  const deploymentActivity = useMemo(
+    () => getDeploymentActivity(deploymentsQuery.data?.data ?? []),
+    [deploymentsQuery.data?.data],
+  );
+  const costBreakdown = useMemo(
+    () => getCostBreakdown(billingUsageQuery.data),
+    [billingUsageQuery.data],
+  );
   const latencyDelta =
     latestInferenceMetric && previousInferenceMetric
       ? latestInferenceMetric.p95LatencyMs - previousInferenceMetric.p95LatencyMs
@@ -320,28 +429,243 @@ export default function DashboardPage() {
         </MetricCard>
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-[1.6fr_1fr]">
+      <section className="grid gap-4 xl:grid-cols-2">
         <Card>
-          <CardHeader>
-            <CardTitle>Deployment activity</CardTitle>
+          <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <CardTitle>GPU Utilization Over Time</CardTitle>
+            <Tabs value={gpuRange} onValueChange={(value) => setGpuRange(value as TimeRange)}>
+              <TabsList>
+                <TabsTrigger value="24h">24h</TabsTrigger>
+                <TabsTrigger value="7d">7d</TabsTrigger>
+                <TabsTrigger value="30d">30d</TabsTrigger>
+              </TabsList>
+            </Tabs>
           </CardHeader>
           <CardContent>
-            <div className="flex h-72 items-center justify-center rounded-md border border-dashed text-sm text-muted-foreground">
-              Chart surface reserved for deployment and inference trends.
-            </div>
+            <ChartContainer
+              className="h-72 w-full"
+              config={{
+                utilization: {
+                  color: "var(--chart-1)",
+                  label: "GPU utilization",
+                },
+              }}
+            >
+              <LineChart
+                accessibilityLayer
+                data={gpuUtilizationSeries}
+                margin={{ bottom: 0, left: 0, right: 12, top: 12 }}
+              >
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  axisLine={false}
+                  dataKey="label"
+                  minTickGap={28}
+                  tickLine={false}
+                  tickMargin={8}
+                />
+                <YAxis
+                  axisLine={false}
+                  domain={[0, 100]}
+                  tickFormatter={(value) => `${value}%`}
+                  tickLine={false}
+                  tickMargin={8}
+                  width={42}
+                />
+                <ChartTooltip content={<ChartTooltipContent />} cursor={false} />
+                <Line
+                  dataKey="utilization"
+                  dot={false}
+                  isAnimationActive={false}
+                  name="utilization"
+                  stroke="var(--color-utilization)"
+                  strokeWidth={2.5}
+                  type="monotone"
+                />
+              </LineChart>
+            </ChartContainer>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>System alerts</CardTitle>
+            <CardTitle>Inference Latency Distribution</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-950 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-100">
-              Training queue latency is above the weekly baseline.
-            </div>
-            <div className="rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-950 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-100">
-              All production inference endpoints are healthy.
+          <CardContent>
+            <ChartContainer
+              className="h-72 w-full"
+              config={{
+                p50LatencyMs: {
+                  color: "var(--chart-2)",
+                  label: "p50",
+                },
+                p95LatencyMs: {
+                  color: "var(--chart-3)",
+                  label: "p95",
+                },
+                p99LatencyMs: {
+                  color: "var(--chart-4)",
+                  label: "p99",
+                },
+              }}
+            >
+              <AreaChart
+                accessibilityLayer
+                data={inferenceMetrics.map((metric) => ({
+                  ...metric,
+                  label: formatTimeLabel(metric.timestamp),
+                }))}
+                margin={{ bottom: 0, left: 0, right: 12, top: 12 }}
+              >
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  axisLine={false}
+                  dataKey="label"
+                  minTickGap={28}
+                  tickLine={false}
+                  tickMargin={8}
+                />
+                <YAxis
+                  axisLine={false}
+                  tickFormatter={(value) => `${value}ms`}
+                  tickLine={false}
+                  tickMargin={8}
+                  width={52}
+                />
+                <ChartTooltip content={<ChartTooltipContent />} cursor={false} />
+                <Area
+                  dataKey="p99LatencyMs"
+                  fill="var(--color-p99LatencyMs)"
+                  fillOpacity={0.12}
+                  isAnimationActive={false}
+                  name="p99LatencyMs"
+                  stroke="var(--color-p99LatencyMs)"
+                  strokeWidth={1.5}
+                  type="monotone"
+                />
+                <Area
+                  dataKey="p95LatencyMs"
+                  fill="var(--color-p95LatencyMs)"
+                  fillOpacity={0.18}
+                  isAnimationActive={false}
+                  name="p95LatencyMs"
+                  stroke="var(--color-p95LatencyMs)"
+                  strokeWidth={1.5}
+                  type="monotone"
+                />
+                <Area
+                  dataKey="p50LatencyMs"
+                  fill="var(--color-p50LatencyMs)"
+                  fillOpacity={0.24}
+                  isAnimationActive={false}
+                  name="p50LatencyMs"
+                  stroke="var(--color-p50LatencyMs)"
+                  strokeWidth={2}
+                  type="monotone"
+                />
+              </AreaChart>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Model Deployment Activity</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer
+              className="h-72 w-full"
+              config={{
+                deployments: {
+                  color: "var(--chart-2)",
+                  label: "deployments",
+                },
+              }}
+            >
+              <BarChart
+                accessibilityLayer
+                data={deploymentActivity}
+                margin={{ bottom: 0, left: 0, right: 12, top: 12 }}
+              >
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  axisLine={false}
+                  dataKey="date"
+                  minTickGap={18}
+                  tickLine={false}
+                  tickMargin={8}
+                />
+                <YAxis allowDecimals={false} axisLine={false} tickLine={false} tickMargin={8} />
+                <ChartTooltip content={<ChartTooltipContent />} cursor={false} />
+                <Bar dataKey="deployments" fill="var(--color-deployments)" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Cost Breakdown</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer
+              className="h-72 w-full"
+              config={{
+                Inference: {
+                  color: "var(--chart-2)",
+                  label: "Inference",
+                },
+                Storage: {
+                  color: "var(--chart-4)",
+                  label: "Storage",
+                },
+                Training: {
+                  color: "var(--chart-1)",
+                  label: "Training",
+                },
+              }}
+            >
+              <PieChart accessibilityLayer margin={{ bottom: 8, left: 8, right: 8, top: 8 }}>
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent
+                      hideLabel
+                      formatter={(value, name) => (
+                        <>
+                          <span className="text-muted-foreground">{name}</span>
+                          <span className="font-mono font-medium tabular-nums text-foreground">
+                            {currencyFormatter.format(Number(value))}
+                          </span>
+                        </>
+                      )}
+                    />
+                  }
+                />
+                <Pie
+                  data={costBreakdown}
+                  dataKey="value"
+                  innerRadius={58}
+                  isAnimationActive={false}
+                  nameKey="name"
+                  outerRadius={96}
+                  paddingAngle={3}
+                >
+                  {costBreakdown.map((entry, index) => (
+                    <Cell key={entry.name} fill={costBreakdownColors[index]} />
+                  ))}
+                </Pie>
+              </PieChart>
+            </ChartContainer>
+            <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
+              {costBreakdown.map((item, index) => (
+                <div key={item.name} className="flex items-center gap-2">
+                  <span
+                    className="size-2.5 rounded-sm"
+                    style={{ backgroundColor: costBreakdownColors[index] }}
+                  />
+                  <span className="truncate text-muted-foreground">{item.name}</span>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>

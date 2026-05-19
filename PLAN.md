@@ -261,10 +261,10 @@ Build the landing dashboard with these sections:
 
 #### Charts
 
-- [ ] **GPU Utilization Over Time** — Line chart (24h, 7d, 30d toggle)
-- [ ] **Inference Latency Distribution** — Area chart with p50/p95/p99 bands
-- [ ] **Model Deployment Activity** — Bar chart of deployments per day
-- [ ] **Cost Breakdown** — Pie/donut chart by service (training, inference, storage)
+- [x] **GPU Utilization Over Time** — Line chart (24h, 7d, 30d toggle)
+- [x] **Inference Latency Distribution** — Area chart with p50/p95/p99 bands
+- [x] **Model Deployment Activity** — Bar chart of deployments per day
+- [x] **Cost Breakdown** — Pie/donut chart by service (training, inference, storage)
 
 #### Widgets
 
