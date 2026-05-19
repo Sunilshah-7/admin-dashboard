@@ -221,26 +221,26 @@ Create full REST API in `mocks/handlers.ts`:
 
 Create `lib/api-client.ts`:
 
-- [ ] Typed fetch wrapper with base URL, headers, error handling
-- [ ] Request/response interceptors for auth tokens
-- [ ] Standardized error formatting
-- [ ] Support for query params, pagination, filtering
+- [x] Typed fetch wrapper with base URL, headers, error handling
+- [x] Request/response interceptors for auth tokens
+- [x] Standardized error formatting
+- [x] Support for query params, pagination, filtering
 
 ### 2.5 Build TanStack Query Hooks
 
 Create hooks in `hooks/`:
 
-- [ ] `useGpuMetrics(timeRange)` — Returns time-series data, auto-refetch
-- [ ] `useGpuSummary()` — Returns current cluster snapshot
-- [ ] `useInferenceMetrics()` — Returns latency/throughput data
-- [ ] `useModelRegistry(filters)` — Returns paginated model list
-- [ ] `useModelDetail(id)` — Returns single model with versions
-- [ ] `useDeployments()` — Returns deployment list
-- [ ] `useDeploymentDetail(id)` — Returns deployment with stages
-- [ ] `useTeams()` — Returns team members
-- [ ] `useAuditLogs(pagination)` — Returns audit trail
-- [ ] `useBillingUsage()` — Returns current usage
-- [ ] `usePlayground()` — Returns prompt testing state + mutation
+- [x] `useGpuMetrics(timeRange)` — Returns time-series data, auto-refetch
+- [x] `useGpuSummary()` — Returns current cluster snapshot
+- [x] `useInferenceMetrics()` — Returns latency/throughput data
+- [x] `useModelRegistry(filters)` — Returns paginated model list
+- [x] `useModelDetail(id)` — Returns single model with versions
+- [x] `useDeployments()` — Returns deployment list
+- [x] `useDeploymentDetail(id)` — Returns deployment with stages
+- [x] `useTeams()` — Returns team members
+- [x] `useAuditLogs(pagination)` — Returns audit trail
+- [x] `useBillingUsage()` — Returns current usage
+- [x] `usePlayground()` — Returns prompt testing state + mutation
 
 **Deliverable**: All API endpoints returning realistic fake data, consumed by typed hooks with loading/error states.
 
