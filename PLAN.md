@@ -171,27 +171,27 @@ Install the following shadcn/ui primitives:
 
 Create `types/api.ts` with interfaces for all endpoints:
 
-- [ ] `ApiResponse<T>` wrapper with data, meta, error fields
-- [ ] `PaginatedResponse<T>` with page, limit, total, hasMore
-- [ ] `GpuMetric`, `GpuMetricSeries` for time-series data
-- [ ] `Model`, `ModelVersion`, `ModelDeployment` for registry
-- [ ] `Deployment`, `DeploymentStage`, `DeploymentLog` for CI/CD
-- [ ] `TeamMember`, `Role`, `Permission` for RBAC
-- [ ] `AuditLogEntry` for compliance
-- [ ] `BillingUsage`, `BillingInvoice` for cost tracking
-- [ ] `PlaygroundMessage`, `PlaygroundSession` for prompt testing
+- [x] `ApiResponse<T>` wrapper with data, meta, error fields
+- [x] `PaginatedResponse<T>` with page, limit, total, hasMore
+- [x] `GpuMetric`, `GpuMetricSeries` for time-series data
+- [x] `Model`, `ModelVersion`, `ModelDeployment` for registry
+- [x] `Deployment`, `DeploymentStage`, `DeploymentLog` for CI/CD
+- [x] `TeamMember`, `Role`, `Permission` for RBAC
+- [x] `AuditLogEntry` for compliance
+- [x] `BillingUsage`, `BillingInvoice` for cost tracking
+- [x] `PlaygroundMessage`, `PlaygroundSession` for prompt testing
 
 ### 2.2 Build Data Generators
 
 Create faker-powered generators in `mocks/data/`:
 
-- [ ] `gpu-metrics.ts`: Generate 24h of 5-minute interval GPU data (utilization, memory, temp, power)
-- [ ] `model-registry.ts`: Generate 10-20 AI models with versions, statuses, metadata
-- [ ] `deployments.ts`: Generate 15-30 deployment pipelines with stages
-- [ ] `teams.ts`: Generate 8-15 team members with roles (admin, engineer, viewer)
-- [ ] `audit-logs.ts`: Generate 50+ audit entries (login, permission change, deployment)
-- [ ] `billing.ts`: Generate monthly usage data with cost breakdowns
-- [ ] `playground.ts`: Generate mock LLM responses for prompt testing
+- [x] `gpu-metrics.ts`: Generate 24h of 5-minute interval GPU data (utilization, memory, temp, power)
+- [x] `model-registry.ts`: Generate 10-20 AI models with versions, statuses, metadata
+- [x] `deployments.ts`: Generate 15-30 deployment pipelines with stages
+- [x] `teams.ts`: Generate 8-15 team members with roles (admin, engineer, viewer)
+- [x] `audit-logs.ts`: Generate 50+ audit entries (login, permission change, deployment)
+- [x] `billing.ts`: Generate monthly usage data with cost breakdowns
+- [x] `playground.ts`: Generate mock LLM responses for prompt testing
 
 ### 2.3 Build MSW Handlers
 
