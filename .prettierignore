@@ -5,6 +5,7 @@ coverage
 node_modules
 next-env.d.ts
 *.tsbuildinfo
+public/mockServiceWorker.js
 
 # Archived pre-migration Vite app.
 inventory
