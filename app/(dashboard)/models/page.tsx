@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Archive, Box, Eye, MoreHorizontal, Plus, Rocket, Search, Trash2 } from "lucide-react";
 
@@ -545,9 +546,11 @@ export default function ModelsPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-44">
-                          <DropdownMenuItem onClick={() => setDetailModel(model)}>
-                            <Eye className="size-4" />
-                            View details
+                          <DropdownMenuItem asChild>
+                            <Link href={`/models/${model.id}`}>
+                              <Eye className="size-4" />
+                              View details
+                            </Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             disabled={status === "archived" || deployModelMutation.isPending}

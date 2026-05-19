@@ -283,11 +283,11 @@ Build the landing dashboard with these sections:
 
 ### 3.3 Model Detail Page (`/models/:id`)
 
-- [ ] Header: Model name, version badge, status indicator, action buttons
-- [ ] **Performance Chart** — Inference latency over time
-- [ ] **Version History** — Table of versions with changelog
-- [ ] **Deployment Config** — Environment, scaling settings, endpoint URL
-- [ ] **Metrics Cards** — Total requests, avg latency, error rate, uptime
+- [x] Header: Model name, version badge, status indicator, action buttons
+- [x] **Performance Chart** — Inference latency over time
+- [x] **Version History** — Table of versions with changelog
+- [x] **Deployment Config** — Environment, scaling settings, endpoint URL
+- [x] **Metrics Cards** — Total requests, avg latency, error rate, uptime
 
 ### 3.4 Deployments Page (`/deployments`)
 
