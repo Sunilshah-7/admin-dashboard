@@ -197,25 +197,25 @@ Create faker-powered generators in `mocks/data/`:
 
 Create full REST API in `mocks/handlers.ts`:
 
-- [ ] `GET /api/metrics/gpu` — GPU time-series metrics
-- [ ] `GET /api/metrics/gpu/summary` — Current cluster summary
-- [ ] `GET /api/metrics/inference` — Inference latency & throughput
-- [ ] `GET /api/models` — List models (paginated, filterable)
-- [ ] `GET /api/models/:id` — Model detail
-- [ ] `POST /api/models/:id/deploy` — Trigger deployment
-- [ ] `GET /api/deployments` — List deployments
-- [ ] `GET /api/deployments/:id` — Deployment detail with logs
-- [ ] `GET /api/deployments/:id/logs` — Streaming logs (SSE mock)
-- [ ] `GET /api/teams` — List team members
-- [ ] `POST /api/teams/invite` — Invite new member
-- [ ] `PATCH /api/teams/:id/role` — Update role
-- [ ] `GET /api/audit-logs` — Audit trail (paginated)
-- [ ] `GET /api/billing/usage` — Current period usage
-- [ ] `GET /api/billing/invoices` — Invoice history
-- [ ] `POST /api/playground/completion` — Mock LLM completion
-- [ ] `POST /api/auth/login` — Mock login
-- [ ] `POST /api/auth/logout` — Mock logout
-- [ ] `GET /api/auth/me` — Current user
+- [x] `GET /api/metrics/gpu` — GPU time-series metrics
+- [x] `GET /api/metrics/gpu/summary` — Current cluster summary
+- [x] `GET /api/metrics/inference` — Inference latency & throughput
+- [x] `GET /api/models` — List models (paginated, filterable)
+- [x] `GET /api/models/:id` — Model detail
+- [x] `POST /api/models/:id/deploy` — Trigger deployment
+- [x] `GET /api/deployments` — List deployments
+- [x] `GET /api/deployments/:id` — Deployment detail with logs
+- [x] `GET /api/deployments/:id/logs` — Streaming logs (SSE mock)
+- [x] `GET /api/teams` — List team members
+- [x] `POST /api/teams/invite` — Invite new member
+- [x] `PATCH /api/teams/:id/role` — Update role
+- [x] `GET /api/audit-logs` — Audit trail (paginated)
+- [x] `GET /api/billing/usage` — Current period usage
+- [x] `GET /api/billing/invoices` — Invoice history
+- [x] `POST /api/playground/completion` — Mock LLM completion
+- [x] `POST /api/auth/login` — Mock login
+- [x] `POST /api/auth/logout` — Mock logout
+- [x] `GET /api/auth/me` — Current user
 
 ### 2.4 Build API Client
 
