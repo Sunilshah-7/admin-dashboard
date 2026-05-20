@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import {
   Activity,
@@ -13,13 +13,13 @@ import {
   Gauge,
   GitBranch,
   KeyRound,
+  LogOut,
   Menu,
   Moon,
+  Play,
   Search,
   Settings,
   ShieldCheck,
-  ShoppingCart,
-  UserRound,
   Sun,
   Users,
 } from "lucide-react";
@@ -29,20 +29,62 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { useAuthStore, type Role } from "@/stores/auth-store";
 import { useThemeStore } from "@/stores/theme-store";
 import { useUiStore } from "@/stores/ui-store";
 
-const navigationItems = [
-  { href: "/dashboard", label: "Dashboard", icon: Gauge },
-  { href: "/users", label: "Users", icon: UserRound },
-  { href: "/products", label: "Products", icon: ShoppingCart },
-  { href: "/models", label: "Models", icon: Cpu },
-  { href: "/deployments", label: "Deployments", icon: GitBranch },
-  { href: "/teams", label: "Teams", icon: Users },
-  { href: "/monitoring", label: "Monitoring", icon: Activity },
-  { href: "/integrations", label: "Integrations", icon: KeyRound },
-  { href: "/settings", label: "Settings", icon: Settings },
+type NavigationItem = {
+  href: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  roles: Role[];
+};
+
+const navigationItems: NavigationItem[] = [
+  { href: "/dashboard", label: "Dashboard", icon: Gauge, roles: ["admin", "engineer", "viewer"] },
+  { href: "/models", label: "Models", icon: Cpu, roles: ["admin", "engineer", "viewer"] },
+  { href: "/deployments", label: "Deployments", icon: GitBranch, roles: ["admin", "engineer"] },
+  { href: "/teams", label: "Teams", icon: Users, roles: ["admin"] },
+  {
+    href: "/monitoring",
+    label: "Monitoring",
+    icon: Activity,
+    roles: ["admin", "engineer", "viewer"],
+  },
+  { href: "/playground", label: "Playground", icon: Play, roles: ["engineer"] },
+  { href: "/integrations", label: "Integrations", icon: KeyRound, roles: ["admin"] },
+  { href: "/settings", label: "Settings", icon: Settings, roles: ["admin"] },
 ];
+
+const roleLabels: Record<Role, string> = {
+  admin: "Admin",
+  engineer: "Engineer",
+  viewer: "Viewer",
+};
+
+function getActiveRole(roles: Role[]): Role {
+  return roles[0] ?? "admin";
+}
+
+function getVisibleNavigationItems(role: Role) {
+  return navigationItems.filter((item) => item.roles.includes(role));
+}
+
+function canAccessPath(pathname: string, role: Role) {
+  if (pathname === "/" || pathname === "/dashboard") {
+    return true;
+  }
+
+  const matchedItem = navigationItems.find(
+    (item) => pathname === item.href || pathname.startsWith(`${item.href}/`),
+  );
+
+  if (!matchedItem) {
+    return false;
+  }
+
+  return matchedItem.roles.includes(role);
+}
 
 function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
@@ -79,6 +121,8 @@ function SidebarContent({
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
+  const role = useAuthStore((state) => getActiveRole(state.roles));
+  const visibleNavigationItems = getVisibleNavigationItems(role);
 
   return (
     <div className="flex h-full flex-col">
@@ -95,7 +139,7 @@ function SidebarContent({
       </div>
       <Separator />
       <nav className="flex-1 space-y-1 p-2">
-        {navigationItems.map((item) => {
+        {visibleNavigationItems.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
           const Icon = item.icon;
 
@@ -131,6 +175,7 @@ function SidebarContent({
             <div className="mt-3">
               <div className="text-sm font-medium">Platform Admin</div>
               <div className="text-xs text-muted-foreground">admin@reflection.ai</div>
+              <div className="mt-2 text-xs font-medium text-primary">{roleLabels[role]}</div>
             </div>
           ) : null}
         </div>
@@ -148,6 +193,9 @@ function Topbar({
 }) {
   const mobileOpen = useUiStore((state) => state.isMobileSidebarOpen);
   const setMobileOpen = useUiStore((state) => state.setMobileSidebarOpen);
+  const role = useAuthStore((state) => getActiveRole(state.roles));
+  const setSessionRole = useAuthStore((state) => state.setSessionRole);
+  const logout = useAuthStore((state) => state.logout);
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/80 lg:px-6">
@@ -192,17 +240,56 @@ function Topbar({
         <span>Search models, teams, logs</span>
       </div>
 
+      <div className="hidden items-center gap-1 rounded-md border bg-muted/40 p-1 md:flex">
+        {(["admin", "engineer", "viewer"] satisfies Role[]).map((item) => (
+          <Button
+            key={item}
+            type="button"
+            size="xs"
+            variant={role === item ? "secondary" : "ghost"}
+            onClick={() => setSessionRole(item)}
+          >
+            {roleLabels[item]}
+          </Button>
+        ))}
+      </div>
+
       <ThemeToggle />
       <Button type="button" variant="ghost" size="icon" aria-label="Notifications">
         <Bell className="size-4" />
+      </Button>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        aria-label="Sign out"
+        onClick={() => logout()}
+      >
+        <LogOut className="size-4" />
       </Button>
     </header>
   );
 }
 
 function DashboardShell({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const router = useRouter();
   const collapsed = useUiStore((state) => state.isSidebarCollapsed);
   const toggleCollapsed = useUiStore((state) => state.toggleSidebarCollapsed);
+  const role = useAuthStore((state) => getActiveRole(state.roles));
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
+  React.useEffect(() => {
+    if (!isAuthenticated) {
+      router.replace("/");
+    }
+  }, [isAuthenticated, router]);
+
+  React.useEffect(() => {
+    if (!canAccessPath(pathname, role)) {
+      router.replace("/dashboard");
+    }
+  }, [pathname, role, router]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">

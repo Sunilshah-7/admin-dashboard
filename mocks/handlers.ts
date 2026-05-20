@@ -1,6 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { http, HttpResponse } from "msw";
 
+import { createApiKey, generateApiKeys } from "@/mocks/data/api-keys";
 import { generateAuditLogs } from "@/mocks/data/audit-logs";
 import { generateBillingInvoices, generateBillingUsage } from "@/mocks/data/billing";
 import { generateDeployments } from "@/mocks/data/deployments";
@@ -16,8 +17,12 @@ import {
 import { generateModels } from "@/mocks/data/model-registry";
 import { generateMockCompletion } from "@/mocks/data/playground";
 import { generateTeamMembers, getRolePermissions } from "@/mocks/data/teams";
+import { createWebhook, generateWebhookDeliveries, generateWebhooks } from "@/mocks/data/webhooks";
 import type {
   ApiResponse,
+  ApiKey,
+  ApiKeyEnvironment,
+  ApiKeyScope,
   AuditLogEntry,
   DeploymentEnvironment,
   DeploymentLog,
@@ -28,6 +33,9 @@ import type {
   Role,
   TeamMember,
   TimeRange,
+  Webhook,
+  WebhookDelivery,
+  WebhookEvent,
 } from "@/types/api";
 
 const models = generateModels(16);
@@ -36,6 +44,9 @@ const teamMembers = generateTeamMembers(12);
 const auditLogs = generateAuditLogs(64);
 const billingUsage = generateBillingUsage();
 const billingInvoices = generateBillingInvoices(12);
+const apiKeys = generateApiKeys();
+const webhooks = generateWebhooks();
+const webhookDeliveries = generateWebhookDeliveries(webhooks);
 
 const currentUser = {
   id: "user_admin",
@@ -355,6 +366,58 @@ const handlers = [
 
   http.get("/api/billing/invoices", ({ request }) => {
     return HttpResponse.json(paginate(request, billingInvoices));
+  }),
+
+  http.get("/api/api-keys", ({ request }) => {
+    return HttpResponse.json(paginate<ApiKey>(request, apiKeys));
+  }),
+
+  http.post("/api/api-keys", async ({ request }) => {
+    const body = await parseJsonBody<{
+      name: string;
+      environment: ApiKeyEnvironment;
+      scopes: ApiKeyScope[];
+      expiresAt: string;
+    }>(request);
+    const created = createApiKey(body);
+
+    apiKeys.unshift(created.apiKey);
+
+    return HttpResponse.json(ok(created), { status: 201 });
+  }),
+
+  http.patch("/api/api-keys/:id/revoke", ({ params }) => {
+    const apiKey = apiKeys.find((item) => item.id === String(params.id));
+
+    if (!apiKey) {
+      return notFound("API key not found");
+    }
+
+    apiKey.status = "revoked";
+    apiKey.revokedAt = new Date().toISOString();
+
+    return HttpResponse.json(ok(apiKey));
+  }),
+
+  http.get("/api/webhooks", ({ request }) => {
+    return HttpResponse.json(paginate<Webhook>(request, webhooks));
+  }),
+
+  http.post("/api/webhooks", async ({ request }) => {
+    const body = await parseJsonBody<{
+      name: string;
+      url: string;
+      events: WebhookEvent[];
+    }>(request);
+    const created = createWebhook(body);
+
+    webhooks.unshift(created.webhook);
+
+    return HttpResponse.json(ok(created), { status: 201 });
+  }),
+
+  http.get("/api/webhooks/deliveries", ({ request }) => {
+    return HttpResponse.json(paginate<WebhookDelivery>(request, webhookDeliveries));
   }),
 
   http.post("/api/playground/completion", async ({ request }) => {

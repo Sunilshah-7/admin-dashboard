@@ -19,6 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useDeployModel, useInferenceMetrics, useModelDetail } from "@/hooks";
+import { useAuthStore } from "@/stores/auth-store";
 import type { Model, ModelDeployment, ModelStatus } from "@/types/api";
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
@@ -128,11 +129,13 @@ function ModelDetailClient({ modelId }: { modelId: string }) {
   const modelQuery = useModelDetail(modelId);
   const inferenceMetricsQuery = useInferenceMetrics();
   const deployModelMutation = useDeployModel();
+  const roles = useAuthStore((state) => state.roles);
   const model = modelQuery.data;
   const primaryDeployment = model ? getPrimaryDeployment(model) : undefined;
   const inferenceMetrics = inferenceMetricsQuery.data ?? [];
   const metricSummary = model ? getMetricSummary(inferenceMetrics, model) : null;
   const latestVersion = model?.versions.at(-1);
+  const canWriteModels = roles.some((role) => role === "admin" || role === "engineer");
 
   function handleDeploy() {
     if (!model || !latestVersion) {
@@ -207,10 +210,12 @@ function ModelDetailClient({ modelId }: { modelId: string }) {
             <GitBranch className="size-4" />
             Compare versions
           </Button>
-          <Button type="button" onClick={handleDeploy} disabled={deployModelMutation.isPending}>
-            <Rocket className="size-4" />
-            Deploy
-          </Button>
+          {canWriteModels ? (
+            <Button type="button" onClick={handleDeploy} disabled={deployModelMutation.isPending}>
+              <Rocket className="size-4" />
+              Deploy
+            </Button>
+          ) : null}
         </div>
       </div>
 

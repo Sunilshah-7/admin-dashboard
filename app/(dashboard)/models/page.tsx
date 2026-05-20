@@ -41,6 +41,7 @@ import {
 } from "@/components/ui/table";
 import { useDeployModel, useModelRegistry } from "@/hooks";
 import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/stores/auth-store";
 import type { DeploymentEnvironment, Model, ModelStatus, ModelType } from "@/types/api";
 
 type StatusFilter = "all" | Extract<ModelStatus, "archived" | "deployed" | "training">;
@@ -286,8 +287,10 @@ export default function ModelsPage() {
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
   const [detailModel, setDetailModel] = useState<Model | null>(null);
   const [wizardOpen, setWizardOpen] = useState(false);
+  const roles = useAuthStore((state) => state.roles);
   const deployModelMutation = useDeployModel();
   const modelsQuery = useModelRegistry({ limit: 100 });
+  const canWriteModels = roles.some((role) => role === "admin" || role === "engineer");
 
   const models = useMemo(() => {
     return (modelsQuery.data?.data ?? [])
@@ -388,10 +391,12 @@ export default function ModelsPage() {
             Search, filter, deploy, and manage model artifacts across serving environments.
           </p>
         </div>
-        <Button type="button" onClick={() => setWizardOpen(true)}>
-          <Plus className="size-4" />
-          Deploy New Model
-        </Button>
+        {canWriteModels ? (
+          <Button type="button" onClick={() => setWizardOpen(true)}>
+            <Plus className="size-4" />
+            Deploy New Model
+          </Button>
+        ) : null}
       </div>
 
       <Card>
@@ -449,28 +454,30 @@ export default function ModelsPage() {
               {models.length} models shown
               {hasSelection ? `, ${selectedIds.size} selected` : ""}
             </div>
-            <div className="flex gap-2">
-              <Button
-                disabled={!hasSelection || deployModelMutation.isPending}
-                size="sm"
-                type="button"
-                variant="outline"
-                onClick={deploySelectedModels}
-              >
-                <Rocket className="size-3.5" />
-                Deploy selected
-              </Button>
-              <Button
-                disabled={!hasSelection}
-                size="sm"
-                type="button"
-                variant="destructive"
-                onClick={deleteSelectedModels}
-              >
-                <Trash2 className="size-3.5" />
-                Delete selected
-              </Button>
-            </div>
+            {canWriteModels ? (
+              <div className="flex gap-2">
+                <Button
+                  disabled={!hasSelection || deployModelMutation.isPending}
+                  size="sm"
+                  type="button"
+                  variant="outline"
+                  onClick={deploySelectedModels}
+                >
+                  <Rocket className="size-3.5" />
+                  Deploy selected
+                </Button>
+                <Button
+                  disabled={!hasSelection}
+                  size="sm"
+                  type="button"
+                  variant="destructive"
+                  onClick={deleteSelectedModels}
+                >
+                  <Trash2 className="size-3.5" />
+                  Delete selected
+                </Button>
+              </div>
+            ) : null}
           </div>
         </CardHeader>
         <CardContent>
@@ -553,7 +560,11 @@ export default function ModelsPage() {
                             </Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem
-                            disabled={status === "archived" || deployModelMutation.isPending}
+                            disabled={
+                              !canWriteModels ||
+                              status === "archived" ||
+                              deployModelMutation.isPending
+                            }
                             onClick={() => deployModel(model)}
                           >
                             <Rocket className="size-4" />
@@ -561,7 +572,7 @@ export default function ModelsPage() {
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
-                            disabled={status === "archived"}
+                            disabled={!canWriteModels || status === "archived"}
                             onClick={() => archiveModel(model.id)}
                           >
                             <Archive className="size-4" />

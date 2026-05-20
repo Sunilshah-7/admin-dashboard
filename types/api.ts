@@ -198,6 +198,65 @@ type BillingInvoice = {
   pdfUrl: string;
 };
 
+type ApiKeyEnvironment = "development" | "staging" | "production";
+type ApiKeyScope = "models:read" | "models:write" | "deployments:write" | "metrics:read";
+type ApiKeyStatus = "active" | "revoked";
+
+type ApiKey = {
+  id: string;
+  name: string;
+  prefix: string;
+  environment: ApiKeyEnvironment;
+  scopes: ApiKeyScope[];
+  status: ApiKeyStatus;
+  lastUsedAt?: string;
+  createdAt: string;
+  expiresAt?: string;
+  revokedAt?: string;
+};
+
+type CreatedApiKey = {
+  apiKey: ApiKey;
+  secretKey: string;
+};
+
+type WebhookEvent =
+  | "model.deployed"
+  | "deployment.failed"
+  | "team.member_invited"
+  | "billing.threshold_reached"
+  | "api_key.revoked";
+type WebhookStatus = "active" | "disabled";
+type WebhookDeliveryStatus = "succeeded" | "failed" | "pending";
+
+type Webhook = {
+  id: string;
+  name: string;
+  url: string;
+  events: WebhookEvent[];
+  status: WebhookStatus;
+  secretPrefix: string;
+  createdAt: string;
+  lastDeliveryAt?: string;
+};
+
+type WebhookDelivery = {
+  id: string;
+  webhookId: string;
+  webhookName: string;
+  event: WebhookEvent;
+  url: string;
+  status: WebhookDeliveryStatus;
+  responseCode?: number;
+  durationMs?: number;
+  deliveredAt: string;
+};
+
+type CreatedWebhook = {
+  webhook: Webhook;
+  signingSecret: string;
+};
+
 type PlaygroundRole = "system" | "user" | "assistant";
 
 type PlaygroundMessage = {
@@ -222,6 +281,10 @@ type PlaygroundSession = {
 };
 
 export type {
+  ApiKey,
+  ApiKeyEnvironment,
+  ApiKeyScope,
+  ApiKeyStatus,
   ApiError,
   ApiMeta,
   ApiResponse,
@@ -229,6 +292,7 @@ export type {
   AuditLogEntry,
   BillingInvoice,
   BillingUsage,
+  CreatedApiKey,
   Deployment,
   DeploymentEnvironment,
   DeploymentLog,
@@ -250,4 +314,10 @@ export type {
   Role,
   TeamMember,
   TimeRange,
+  CreatedWebhook,
+  Webhook,
+  WebhookDelivery,
+  WebhookDeliveryStatus,
+  WebhookEvent,
+  WebhookStatus,
 };

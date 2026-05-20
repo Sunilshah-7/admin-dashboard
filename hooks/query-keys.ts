@@ -40,6 +40,18 @@ const queryKeys = {
     invoices: (pagination?: PaginationParams) =>
       [...queryKeys.billing.all, "invoices", pagination ?? {}] as const,
   },
+  apiKeys: {
+    all: ["api-keys"] as const,
+    list: (pagination?: PaginationParams) =>
+      [...queryKeys.apiKeys.all, "list", pagination ?? {}] as const,
+  },
+  webhooks: {
+    all: ["webhooks"] as const,
+    list: (pagination?: PaginationParams) =>
+      [...queryKeys.webhooks.all, "list", pagination ?? {}] as const,
+    deliveries: (pagination?: PaginationParams) =>
+      [...queryKeys.webhooks.all, "deliveries", pagination ?? {}] as const,
+  },
   playground: {
     all: ["playground"] as const,
     completion: () => [...queryKeys.playground.all, "completion"] as const,
