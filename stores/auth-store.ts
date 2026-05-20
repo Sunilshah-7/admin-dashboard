@@ -23,8 +23,33 @@ type AuthState = {
   isAuthenticated: boolean;
   login: (payload: LoginPayload) => void;
   logout: () => void;
+  setSessionRole: (role: Role) => void;
   hasRole: (role: Role) => boolean;
   hasPermission: (permission: Permission) => boolean;
+};
+
+const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
+  admin: [
+    "dashboard:read",
+    "models:read",
+    "models:write",
+    "deployments:read",
+    "deployments:write",
+    "teams:read",
+    "teams:write",
+    "monitoring:read",
+    "integrations:manage",
+    "settings:manage",
+  ],
+  engineer: [
+    "dashboard:read",
+    "models:read",
+    "models:write",
+    "deployments:read",
+    "deployments:write",
+    "monitoring:read",
+  ],
+  viewer: ["dashboard:read", "models:read", "deployments:read", "monitoring:read"],
 };
 
 const useAuthStore = create<AuthState>()(
@@ -48,6 +73,17 @@ const useAuthStore = create<AuthState>()(
           permissions: [],
           isAuthenticated: false,
         }),
+      setSessionRole: (role) =>
+        set((state) => ({
+          user: state.user ?? {
+            id: "user_admin",
+            name: "Platform Admin",
+            email: "admin@reflection.ai",
+          },
+          roles: [role],
+          permissions: ROLE_PERMISSIONS[role],
+          isAuthenticated: true,
+        })),
       hasRole: (role) => get().roles.includes(role),
       hasPermission: (permission) => get().permissions.includes(permission),
     }),
@@ -64,4 +100,5 @@ const useAuthStore = create<AuthState>()(
 );
 
 export { useAuthStore };
+export { ROLE_PERMISSIONS };
 export type { AuthUser, LoginPayload, Permission, Role };

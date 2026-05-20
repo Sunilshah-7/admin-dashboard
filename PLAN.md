@@ -312,11 +312,11 @@ Build the landing dashboard with these sections:
 
 ### 4.2 Role-Based Sidebar
 
-- [ ] Admin sees: Dashboard, Models, Deployments, Teams, Monitoring, Integrations, Settings
-- [ ] Engineer sees: Dashboard, Models, Deployments, Monitoring, Playground
-- [ ] Viewer sees: Dashboard, Models (read-only), Monitoring
-- [ ] Hide unauthorized routes from navigation
-- [ ] Redirect unauthorized direct URL access to dashboard
+- [x] Admin sees: Dashboard, Models, Deployments, Teams, Monitoring, Integrations, Settings
+- [x] Engineer sees: Dashboard, Models, Deployments, Monitoring, Playground
+- [x] Viewer sees: Dashboard, Models (read-only), Monitoring
+- [x] Hide unauthorized routes from navigation
+- [x] Redirect unauthorized direct URL access to dashboard
 
 ### 4.3 Integrations Page (`/integrations`)
 
