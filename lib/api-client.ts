@@ -20,6 +20,9 @@ import type {
   Role,
   TeamMember,
   TimeRange,
+  Webhook,
+  WebhookDelivery,
+  WebhookEvent,
 } from "@/types/api";
 
 type QueryValue = string | number | boolean | null | undefined;
@@ -88,6 +91,12 @@ type CreateApiKeyPayload = {
   environment: ApiKeyEnvironment;
   scopes: ApiKeyScope[];
   expiresAt?: string;
+};
+
+type CreateWebhookPayload = {
+  name: string;
+  url: string;
+  events: WebhookEvent[];
 };
 
 class ApiClientError extends Error {
@@ -376,6 +385,21 @@ class ApiClient {
     revoke: (id: string) => this.patch<ApiKey>(`/api/api-keys/${id}/revoke`),
   };
 
+  webhooks = {
+    list: (params?: PaginationParams) =>
+      this.paginated<Webhook>("/api/webhooks", {
+        method: "GET",
+        query: params,
+      }),
+    create: (body: CreateWebhookPayload) =>
+      this.post<{ webhook: Webhook; signingSecret: string }>("/api/webhooks", body),
+    deliveries: (params?: PaginationParams) =>
+      this.paginated<WebhookDelivery>("/api/webhooks/deliveries", {
+        method: "GET",
+        query: params,
+      }),
+  };
+
   playground = {
     completion: (body: { prompt: string }) =>
       this.post<PlaygroundMessage>("/api/playground/completion", body),
@@ -388,6 +412,7 @@ export { ApiClient, ApiClientError, apiClient };
 export type {
   AuditLogParams,
   CreateApiKeyPayload,
+  CreateWebhookPayload,
   DeploymentListParams,
   DeployModelPayload,
   InviteMemberPayload,

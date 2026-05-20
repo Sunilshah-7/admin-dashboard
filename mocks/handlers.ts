@@ -17,6 +17,7 @@ import {
 import { generateModels } from "@/mocks/data/model-registry";
 import { generateMockCompletion } from "@/mocks/data/playground";
 import { generateTeamMembers, getRolePermissions } from "@/mocks/data/teams";
+import { createWebhook, generateWebhookDeliveries, generateWebhooks } from "@/mocks/data/webhooks";
 import type {
   ApiResponse,
   ApiKey,
@@ -32,6 +33,9 @@ import type {
   Role,
   TeamMember,
   TimeRange,
+  Webhook,
+  WebhookDelivery,
+  WebhookEvent,
 } from "@/types/api";
 
 const models = generateModels(16);
@@ -41,6 +45,8 @@ const auditLogs = generateAuditLogs(64);
 const billingUsage = generateBillingUsage();
 const billingInvoices = generateBillingInvoices(12);
 const apiKeys = generateApiKeys();
+const webhooks = generateWebhooks();
+const webhookDeliveries = generateWebhookDeliveries(webhooks);
 
 const currentUser = {
   id: "user_admin",
@@ -391,6 +397,27 @@ const handlers = [
     apiKey.revokedAt = new Date().toISOString();
 
     return HttpResponse.json(ok(apiKey));
+  }),
+
+  http.get("/api/webhooks", ({ request }) => {
+    return HttpResponse.json(paginate<Webhook>(request, webhooks));
+  }),
+
+  http.post("/api/webhooks", async ({ request }) => {
+    const body = await parseJsonBody<{
+      name: string;
+      url: string;
+      events: WebhookEvent[];
+    }>(request);
+    const created = createWebhook(body);
+
+    webhooks.unshift(created.webhook);
+
+    return HttpResponse.json(ok(created), { status: 201 });
+  }),
+
+  http.get("/api/webhooks/deliveries", ({ request }) => {
+    return HttpResponse.json(paginate<WebhookDelivery>(request, webhookDeliveries));
   }),
 
   http.post("/api/playground/completion", async ({ request }) => {

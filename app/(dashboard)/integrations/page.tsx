@@ -8,8 +8,10 @@ import {
   KeyRound,
   LockKeyhole,
   Plus,
+  Send,
   ShieldCheck,
   Trash2,
+  Webhook as WebhookIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -44,7 +46,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useApiKeys, useCreateApiKey, useRevokeApiKey } from "@/hooks/use-api-keys";
-import type { ApiKey, ApiKeyEnvironment, ApiKeyScope } from "@/types/api";
+import { useCreateWebhook, useWebhookDeliveries, useWebhooks } from "@/hooks/use-webhooks";
+import type {
+  ApiKey,
+  ApiKeyEnvironment,
+  ApiKeyScope,
+  WebhookDeliveryStatus,
+  WebhookEvent,
+  WebhookStatus,
+} from "@/types/api";
 
 const signInUrl = "http://localhost:3001/";
 const availableScopes: ApiKeyScope[] = [
@@ -59,6 +69,22 @@ const scopeLabels: Record<ApiKeyScope, string> = {
   "models:write": "Write models",
   "deployments:write": "Deploy models",
   "metrics:read": "Read metrics",
+};
+
+const availableWebhookEvents: WebhookEvent[] = [
+  "model.deployed",
+  "deployment.failed",
+  "team.member_invited",
+  "billing.threshold_reached",
+  "api_key.revoked",
+];
+
+const webhookEventLabels: Record<WebhookEvent, string> = {
+  "model.deployed": "Model deployed",
+  "deployment.failed": "Deployment failed",
+  "team.member_invited": "Team member invited",
+  "billing.threshold_reached": "Billing threshold reached",
+  "api_key.revoked": "API key revoked",
 };
 
 function formatDate(value?: string) {
@@ -77,8 +103,20 @@ function formatLastUsed(value?: string) {
   return `${formatDistanceToNow(new Date(value))} ago`;
 }
 
-function getStatusVariant(status: ApiKey["status"]) {
+function getApiKeyStatusVariant(status: ApiKey["status"]) {
   return status === "active" ? "secondary" : "destructive";
+}
+
+function getWebhookStatusVariant(status: WebhookStatus) {
+  return status === "active" ? "secondary" : "outline";
+}
+
+function getDeliveryStatusVariant(status: WebhookDeliveryStatus) {
+  if (status === "succeeded") {
+    return "secondary";
+  }
+
+  return status === "pending" ? "outline" : "destructive";
 }
 
 export default function IntegrationsPage() {
@@ -93,10 +131,22 @@ export default function IntegrationsPage() {
   const [expiresAt, setExpiresAt] = useState("");
   const [createdSecret, setCreatedSecret] = useState<string | null>(null);
   const [revokeTarget, setRevokeTarget] = useState<ApiKey | null>(null);
+  const [isWebhookCreateOpen, setIsWebhookCreateOpen] = useState(false);
+  const [webhookName, setWebhookName] = useState("");
+  const [webhookUrl, setWebhookUrl] = useState("");
+  const [selectedWebhookEvents, setSelectedWebhookEvents] = useState<WebhookEvent[]>([
+    "model.deployed",
+  ]);
+  const [createdWebhookSecret, setCreatedWebhookSecret] = useState<string | null>(null);
   const apiKeysQuery = useApiKeys({ page: 1, limit: 20 });
   const createApiKey = useCreateApiKey();
   const revokeApiKey = useRevokeApiKey();
+  const webhooksQuery = useWebhooks({ page: 1, limit: 20 });
+  const webhookDeliveriesQuery = useWebhookDeliveries({ page: 1, limit: 10 });
+  const createWebhook = useCreateWebhook();
   const apiKeys = apiKeysQuery.data?.data ?? [];
+  const webhooks = webhooksQuery.data?.data ?? [];
+  const webhookDeliveries = webhookDeliveriesQuery.data?.data ?? [];
 
   function resetCreateForm() {
     setKeyName("");
@@ -113,6 +163,23 @@ export default function IntegrationsPage() {
 
       const nextScopes = current.filter((item) => item !== scope);
       return nextScopes.length ? nextScopes : ["models:read"];
+    });
+  }
+
+  function resetWebhookCreateForm() {
+    setWebhookName("");
+    setWebhookUrl("");
+    setSelectedWebhookEvents(["model.deployed"]);
+  }
+
+  function toggleWebhookEvent(eventName: WebhookEvent, checked: boolean) {
+    setSelectedWebhookEvents((current) => {
+      if (checked) {
+        return Array.from(new Set([...current, eventName]));
+      }
+
+      const nextEvents = current.filter((item) => item !== eventName);
+      return nextEvents.length ? nextEvents : ["model.deployed"];
     });
   }
 
@@ -152,6 +219,27 @@ export default function IntegrationsPage() {
         toast.error("Could not revoke API key");
       },
     });
+  }
+
+  function handleCreateWebhook() {
+    createWebhook.mutate(
+      {
+        name: webhookName,
+        url: webhookUrl,
+        events: selectedWebhookEvents,
+      },
+      {
+        onSuccess: (result) => {
+          setCreatedWebhookSecret(result?.signingSecret ?? null);
+          setIsWebhookCreateOpen(false);
+          resetWebhookCreateForm();
+          toast.success("Webhook endpoint created");
+        },
+        onError: () => {
+          toast.error("Could not create webhook");
+        },
+      },
+    );
   }
 
   function copyValue(value: string, message: string) {
@@ -354,7 +442,7 @@ export default function IntegrationsPage() {
                   <TableCell>{formatLastUsed(apiKey.lastUsedAt)}</TableCell>
                   <TableCell>{formatDate(apiKey.createdAt)}</TableCell>
                   <TableCell>
-                    <Badge variant={getStatusVariant(apiKey.status)}>{apiKey.status}</Badge>
+                    <Badge variant={getApiKeyStatusVariant(apiKey.status)}>{apiKey.status}</Badge>
                   </TableCell>
                   <TableCell>
                     <div className="flex justify-end gap-2">
@@ -385,6 +473,143 @@ export default function IntegrationsPage() {
           </Table>
         </CardContent>
       </Card>
+
+      <section className="grid gap-4 xl:grid-cols-[1fr_0.9fr]">
+        <Card>
+          <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <WebhookIcon className="size-4" />
+                Webhooks
+              </CardTitle>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Send platform events to an external HTTPS endpoint.
+              </p>
+            </div>
+            <Button type="button" onClick={() => setIsWebhookCreateOpen(true)}>
+              <Plus className="size-4" />
+              Add webhook
+            </Button>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>URL</TableHead>
+                  <TableHead>Events</TableHead>
+                  <TableHead>Secret</TableHead>
+                  <TableHead>Last delivery</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {webhooksQuery.isLoading ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="h-20 text-center text-muted-foreground">
+                      Loading webhooks...
+                    </TableCell>
+                  </TableRow>
+                ) : null}
+                {!webhooksQuery.isLoading && webhooks.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="h-20 text-center text-muted-foreground">
+                      No webhook endpoints have been configured.
+                    </TableCell>
+                  </TableRow>
+                ) : null}
+                {webhooks.map((webhook) => (
+                  <TableRow key={webhook.id}>
+                    <TableCell className="font-medium">{webhook.name}</TableCell>
+                    <TableCell>
+                      <code className="block max-w-72 truncate rounded-md bg-muted px-2 py-1 text-xs">
+                        {webhook.url}
+                      </code>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex max-w-64 flex-wrap gap-1">
+                        {webhook.events.map((eventName) => (
+                          <Badge key={eventName} variant="outline">
+                            {webhookEventLabels[eventName]}
+                          </Badge>
+                        ))}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <code className="rounded-md bg-muted px-2 py-1 text-xs">
+                        {webhook.secretPrefix}
+                      </code>
+                    </TableCell>
+                    <TableCell>{formatLastUsed(webhook.lastDeliveryAt)}</TableCell>
+                    <TableCell>
+                      <Badge variant={getWebhookStatusVariant(webhook.status)}>
+                        {webhook.status}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Send className="size-4" />
+              Delivery History
+            </CardTitle>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Recent delivery attempts across configured endpoints.
+            </p>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Event</TableHead>
+                  <TableHead>Endpoint</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Response</TableHead>
+                  <TableHead>Delivered</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {webhookDeliveriesQuery.isLoading ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="h-20 text-center text-muted-foreground">
+                      Loading deliveries...
+                    </TableCell>
+                  </TableRow>
+                ) : null}
+                {!webhookDeliveriesQuery.isLoading && webhookDeliveries.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="h-20 text-center text-muted-foreground">
+                      No deliveries have been recorded.
+                    </TableCell>
+                  </TableRow>
+                ) : null}
+                {webhookDeliveries.map((delivery) => (
+                  <TableRow key={delivery.id}>
+                    <TableCell>{webhookEventLabels[delivery.event]}</TableCell>
+                    <TableCell className="font-medium">{delivery.webhookName}</TableCell>
+                    <TableCell>
+                      <Badge variant={getDeliveryStatusVariant(delivery.status)}>
+                        {delivery.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {delivery.responseCode ? `${delivery.responseCode} in ` : ""}
+                      {delivery.durationMs ?? "--"}ms
+                    </TableCell>
+                    <TableCell>{formatLastUsed(delivery.deliveredAt)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </section>
 
       <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
         <DialogContent className="sm:max-w-lg">
@@ -485,6 +710,99 @@ export default function IntegrationsPage() {
               type="button"
               variant="outline"
               onClick={() => createdSecret && copyValue(createdSecret, "API key copied")}
+            >
+              <Clipboard className="size-4" />
+            </Button>
+          </div>
+          <DialogFooter showCloseButton />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isWebhookCreateOpen} onOpenChange={setIsWebhookCreateOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Add webhook</DialogTitle>
+            <DialogDescription>
+              Select the events this endpoint should receive. The signing secret is shown once.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4">
+            <div className="space-y-2">
+              <label htmlFor="webhookName" className="text-sm font-medium">
+                Name
+              </label>
+              <Input
+                id="webhookName"
+                placeholder="Ops alerts"
+                value={webhookName}
+                onChange={(event) => setWebhookName(event.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="webhookUrl" className="text-sm font-medium">
+                Endpoint URL
+              </label>
+              <Input
+                id="webhookUrl"
+                placeholder="https://example.com/reflection/events"
+                type="url"
+                value={webhookUrl}
+                onChange={(event) => setWebhookUrl(event.target.value)}
+              />
+            </div>
+            <div className="space-y-3">
+              <div className="text-sm font-medium">Events</div>
+              <div className="grid gap-2">
+                {availableWebhookEvents.map((eventName) => (
+                  <label
+                    key={eventName}
+                    className="flex items-center gap-2 rounded-md border p-3 text-sm"
+                  >
+                    <Checkbox
+                      checked={selectedWebhookEvents.includes(eventName)}
+                      onCheckedChange={(checked) => toggleWebhookEvent(eventName, checked === true)}
+                    />
+                    {webhookEventLabels[eventName]}
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button type="button" variant="outline">
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button disabled={createWebhook.isPending} type="button" onClick={handleCreateWebhook}>
+              {createWebhook.isPending ? "Creating..." : "Create webhook"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={createdWebhookSecret !== null}
+        onOpenChange={(open) => !open && setCreatedWebhookSecret(null)}
+      >
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Webhook signing secret</DialogTitle>
+            <DialogDescription>
+              Use this secret to verify webhook signatures. It will not be shown again.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-2">
+            <Input readOnly value={createdWebhookSecret ?? ""} />
+            <Button
+              aria-label="Copy webhook signing secret"
+              size="icon"
+              type="button"
+              variant="outline"
+              onClick={() =>
+                createdWebhookSecret &&
+                copyValue(createdWebhookSecret, "Webhook signing secret copied")
+              }
             >
               <Clipboard className="size-4" />
             </Button>

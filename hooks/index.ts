@@ -7,3 +7,4 @@ export { useGpuMetrics, useGpuSummary, useInferenceMetrics } from "@/hooks/use-m
 export { useDeployModel, useModelDetail, useModelRegistry } from "@/hooks/use-models";
 export { usePlayground } from "@/hooks/use-playground";
 export { useInviteTeamMember, useTeams, useUpdateTeamMemberRole } from "@/hooks/use-teams";
+export { useCreateWebhook, useWebhookDeliveries, useWebhooks } from "@/hooks/use-webhooks";

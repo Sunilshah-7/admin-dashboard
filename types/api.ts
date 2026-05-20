@@ -220,6 +220,43 @@ type CreatedApiKey = {
   secretKey: string;
 };
 
+type WebhookEvent =
+  | "model.deployed"
+  | "deployment.failed"
+  | "team.member_invited"
+  | "billing.threshold_reached"
+  | "api_key.revoked";
+type WebhookStatus = "active" | "disabled";
+type WebhookDeliveryStatus = "succeeded" | "failed" | "pending";
+
+type Webhook = {
+  id: string;
+  name: string;
+  url: string;
+  events: WebhookEvent[];
+  status: WebhookStatus;
+  secretPrefix: string;
+  createdAt: string;
+  lastDeliveryAt?: string;
+};
+
+type WebhookDelivery = {
+  id: string;
+  webhookId: string;
+  webhookName: string;
+  event: WebhookEvent;
+  url: string;
+  status: WebhookDeliveryStatus;
+  responseCode?: number;
+  durationMs?: number;
+  deliveredAt: string;
+};
+
+type CreatedWebhook = {
+  webhook: Webhook;
+  signingSecret: string;
+};
+
 type PlaygroundRole = "system" | "user" | "assistant";
 
 type PlaygroundMessage = {
@@ -277,4 +314,10 @@ export type {
   Role,
   TeamMember,
   TimeRange,
+  CreatedWebhook,
+  Webhook,
+  WebhookDelivery,
+  WebhookDeliveryStatus,
+  WebhookEvent,
+  WebhookStatus,
 };
