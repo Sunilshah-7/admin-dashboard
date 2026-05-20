@@ -13,6 +13,7 @@ import {
   Gauge,
   GitBranch,
   KeyRound,
+  LogOut,
   Menu,
   Moon,
   Play,
@@ -194,6 +195,7 @@ function Topbar({
   const setMobileOpen = useUiStore((state) => state.setMobileSidebarOpen);
   const role = useAuthStore((state) => getActiveRole(state.roles));
   const setSessionRole = useAuthStore((state) => state.setSessionRole);
+  const logout = useAuthStore((state) => state.logout);
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/80 lg:px-6">
@@ -256,6 +258,15 @@ function Topbar({
       <Button type="button" variant="ghost" size="icon" aria-label="Notifications">
         <Bell className="size-4" />
       </Button>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        aria-label="Sign out"
+        onClick={() => logout()}
+      >
+        <LogOut className="size-4" />
+      </Button>
     </header>
   );
 }
@@ -267,13 +278,12 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
   const toggleCollapsed = useUiStore((state) => state.toggleSidebarCollapsed);
   const role = useAuthStore((state) => getActiveRole(state.roles));
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const setSessionRole = useAuthStore((state) => state.setSessionRole);
 
   React.useEffect(() => {
     if (!isAuthenticated) {
-      setSessionRole("admin");
+      router.replace("/");
     }
-  }, [isAuthenticated, setSessionRole]);
+  }, [isAuthenticated, router]);
 
   React.useEffect(() => {
     if (!canAccessPath(pathname, role)) {

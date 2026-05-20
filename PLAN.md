@@ -320,11 +320,11 @@ Build the landing dashboard with these sections:
 
 ### 4.3 Integrations Page (`/integrations`)
 
-- [ ] **SSO Configuration**:
-  - Provider selection (Okta, Azure AD, Google Workspace)
-  - Metadata URL input, certificate upload
-  - Test connection button with status
-  - SCIM provisioning toggle
+- [x] **Manual Authentication Configuration**:
+  - Email/password login screen
+  - Role selection for demo users
+  - Session and password policy settings
+  - OAuth credential fields removed
 - [ ] **API Keys**:
   - List of keys with name, prefix, last used, created date
   - Generate new key flow
