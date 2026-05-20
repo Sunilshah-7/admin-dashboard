@@ -335,27 +335,27 @@ Build the landing dashboard with these sections:
 
 ### 4.4 Settings Pages
 
-- [ ] `/settings/security`:
+- [x] `/settings/security`:
   - SOC2 compliance badge
   - GDPR data processing toggle
   - Session management (active sessions, revoke)
   - 2FA enrollment mock
-- [ ] `/settings/billing`:
+- [x] `/settings/billing`:
   - Current plan card with usage bar
   - Token consumption chart
   - Compute hours by service
   - Invoice history table
   - Usage alerts configuration
-- [ ] `/settings/audit`:
+- [x] `/settings/audit`:
   - Full audit log table with filters (actor, action, date range)
   - Export to CSV button
 
 ### 4.5 Monitoring & Alerts (`/monitoring`)
 
-- [ ] Alert feed: Real-time alert cards with severity, timestamp, description
-- [ ] Alert rules table: Condition, threshold, notification channel, status
-- [ ] Model drift chart: Accuracy degradation over time
-- [ ] Anomaly detection events list
+- [x] Alert feed: Real-time alert cards with severity, timestamp, description
+- [x] Alert rules table: Condition, threshold, notification channel, status
+- [x] Model drift chart: Accuracy degradation over time
+- [x] Anomaly detection events list
 
 **Deliverable**: Full RBAC system, enterprise integrations UI, audit trails, and monitoring.
 
