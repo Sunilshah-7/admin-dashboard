@@ -36,10 +36,14 @@ import { apiClient } from "@/lib/api-client";
 import { cn } from "@/lib/utils";
 import type { Model, PlaygroundMessage } from "@/types/api";
 
+type CompletionProvider = "huggingface" | "mock";
+type ProviderByMessageId = Record<string, CompletionProvider>;
+
 type CompareResponse = {
   modelId: string;
   modelName: string;
   message: PlaygroundMessage;
+  provider: CompletionProvider;
 };
 
 const defaultSystemPrompt =
@@ -81,6 +85,36 @@ function formatCost(value: number) {
   return `$${value.toFixed(4)}`;
 }
 
+function getModelRegistryContext(models: Model[]) {
+  if (!models.length) {
+    return "Model registry context: no model records are currently loaded.";
+  }
+
+  const modelSummaries = models
+    .slice(0, 20)
+    .map((model) => {
+      const deployments = model.deployments
+        .map(
+          (deployment) =>
+            `${deployment.environment}:${deployment.status}, replicas=${deployment.replicas}`,
+        )
+        .join("; ");
+
+      return [
+        `Name: ${model.name}`,
+        `Status: ${model.status}`,
+        `Type: ${model.type}`,
+        `Current version: ${model.currentVersion}`,
+        `p95 latency: ${model.latencyP95Ms}ms`,
+        `Error rate: ${model.errorRatePercent}%`,
+        `Deployments: ${deployments || "none"}`,
+      ].join(" | ");
+    })
+    .join("\n");
+
+  return `Model registry context:\n${modelSummaries}`;
+}
+
 export default function PlaygroundPage() {
   const modelsQuery = useModelRegistry({ page: 1, limit: 20 });
   const models = useMemo(
@@ -97,6 +131,8 @@ export default function PlaygroundPage() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<PlaygroundMessage[]>([]);
   const [compareResponses, setCompareResponses] = useState<CompareResponse[]>([]);
+  const [lastProvider, setLastProvider] = useState<CompletionProvider | null>(null);
+  const [messageProviders, setMessageProviders] = useState<ProviderByMessageId>({});
 
   const primaryModel = models.find((model) => model.id === selectedModelId) ?? models[0];
   const secondaryModel =
@@ -104,14 +140,54 @@ export default function PlaygroundPage() {
     models.find((model) => model.id !== primaryModel?.id) ??
     models[1];
 
+  async function requestCompletion({
+    modelName,
+    prompt,
+  }: {
+    modelName?: string;
+    prompt: string;
+  }): Promise<{ message: PlaygroundMessage | null; provider: CompletionProvider }> {
+    try {
+      const response = await apiClient.playground.huggingFaceCompletion({
+        maxTokens,
+        model: undefined,
+        prompt,
+        systemPrompt: `${systemPrompt}\n\n${getModelRegistryContext(models)}\n\nAnswer questions about model status from this context. If a model is not listed, say that it is not present in the loaded registry context.`,
+        temperature,
+        topP,
+      });
+
+      return {
+        message: response.data?.message ?? null,
+        provider: "huggingface",
+      };
+    } catch {
+      const fallbackPrompt = modelName ? `[${modelName}] ${prompt}` : prompt;
+      const fallback = await apiClient.playground
+        .completion({ prompt: fallbackPrompt })
+        .then((response) => response.data);
+
+      return {
+        message: fallback,
+        provider: "mock",
+      };
+    }
+  }
+
   const completionMutation = useMutation({
     mutationFn: (prompt: string) =>
-      apiClient.playground.completion({ prompt }).then((response) => response.data),
+      requestCompletion({
+        modelName: primaryModel?.name,
+        prompt,
+      }),
   });
 
   const regenerateMutation = useMutation({
     mutationFn: ({ prompt }: { prompt: string; assistantId: string }) =>
-      apiClient.playground.completion({ prompt }).then((response) => response.data),
+      requestCompletion({
+        modelName: primaryModel?.name,
+        prompt,
+      }),
   });
 
   const totalTokens = messages.reduce((total, message) => total + (message.tokenCount ?? 0), 0);
@@ -142,38 +218,50 @@ export default function PlaygroundPage() {
     setCompareResponses([]);
 
     try {
-      const assistantMessage = await completionMutation.mutateAsync(
-        `${systemPrompt}\n\nUser prompt: ${trimmedPrompt}`,
-      );
+      const completion = await completionMutation.mutateAsync(trimmedPrompt);
+      const assistantMessage = completion.message;
+
+      setLastProvider(completion.provider);
+      if (completion.provider === "mock") {
+        toast.info("Hugging Face unavailable, using mock fallback");
+      }
 
       if (assistantMessage) {
         setMessages((current) => [...current, assistantMessage]);
+        setMessageProviders((current) => ({
+          ...current,
+          [assistantMessage.id]: completion.provider,
+        }));
       }
 
       if (compareMode && primaryModel && secondaryModel) {
         const [primaryResponse, secondaryResponse] = await Promise.all([
-          apiClient.playground
-            .completion({ prompt: `[${primaryModel.name}] ${trimmedPrompt}` })
-            .then((response) => response.data),
-          apiClient.playground
-            .completion({ prompt: `[${secondaryModel.name}] ${trimmedPrompt}` })
-            .then((response) => response.data),
+          requestCompletion({
+            modelName: primaryModel.name,
+            prompt: trimmedPrompt,
+          }),
+          requestCompletion({
+            modelName: secondaryModel.name,
+            prompt: trimmedPrompt,
+          }),
         ]);
 
         setCompareResponses(
           [
-            primaryResponse
+            primaryResponse.message
               ? {
-                  message: primaryResponse,
+                  message: primaryResponse.message,
                   modelId: primaryModel.id,
                   modelName: primaryModel.name,
+                  provider: primaryResponse.provider,
                 }
               : null,
-            secondaryResponse
+            secondaryResponse.message
               ? {
-                  message: secondaryResponse,
+                  message: secondaryResponse.message,
                   modelId: secondaryModel.id,
                   modelName: secondaryModel.name,
+                  provider: secondaryResponse.provider,
                 }
               : null,
           ].filter(Boolean) as CompareResponse[],
@@ -196,18 +284,29 @@ export default function PlaygroundPage() {
     }
 
     try {
-      const replacement = await regenerateMutation.mutateAsync({
+      const completion = await regenerateMutation.mutateAsync({
         assistantId,
-        prompt: `${systemPrompt}\n\nUser prompt: ${previousUser.content}`,
+        prompt: previousUser.content,
       });
+      const replacement = completion.message;
 
       if (!replacement) {
         return;
       }
 
+      setLastProvider(completion.provider);
+      if (completion.provider === "mock") {
+        toast.info("Hugging Face unavailable, using mock fallback");
+      }
+
       setMessages((current) =>
         current.map((message) => (message.id === assistantId ? replacement : message)),
       );
+      setMessageProviders((current) => ({
+        ...current,
+        [assistantId]: completion.provider,
+        [replacement.id]: completion.provider,
+      }));
       toast.success("Response regenerated");
     } catch {
       toast.error("Could not regenerate response");
@@ -217,6 +316,7 @@ export default function PlaygroundPage() {
   function clearConversation() {
     setMessages([]);
     setCompareResponses([]);
+    setMessageProviders({});
     completionMutation.reset();
     regenerateMutation.reset();
   }
@@ -230,9 +330,14 @@ export default function PlaygroundPage() {
             Test prompts, tune model parameters, compare responses, and inspect request metrics.
           </p>
         </div>
-        <Badge className="w-fit rounded-md" variant="secondary">
-          Engineer workspace
-        </Badge>
+        <div className="flex flex-wrap gap-2">
+          <Badge className="w-fit rounded-md" variant="secondary">
+            Engineer workspace
+          </Badge>
+          <Badge className="w-fit rounded-md" variant="outline">
+            Powered by Hugging Face
+          </Badge>
+        </div>
       </div>
 
       <section className="grid gap-4 xl:grid-cols-[360px_1fr]">
@@ -395,6 +500,16 @@ export default function PlaygroundPage() {
                 <span className="text-muted-foreground">Cost estimate</span>
                 <span className="font-medium">{formatCost(currentCost)}</span>
               </div>
+              <div className="flex items-center justify-between rounded-md border p-3">
+                <span className="text-muted-foreground">Provider</span>
+                <span className="font-medium">
+                  {lastProvider === "huggingface"
+                    ? "Hugging Face"
+                    : lastProvider === "mock"
+                      ? "Mock fallback"
+                      : "Ready"}
+                </span>
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -456,6 +571,13 @@ export default function PlaygroundPage() {
                             <div className="text-sm font-medium">
                               {isAssistant ? resolveModelName(primaryModel?.id) : "You"}
                             </div>
+                            {isAssistant ? (
+                              <Badge className="mt-2" variant="outline">
+                                {messageProviders[message.id] === "huggingface"
+                                  ? "Hugging Face"
+                                  : "Mock fallback"}
+                              </Badge>
+                            ) : null}
                             <div className="mt-2 whitespace-pre-wrap text-sm leading-6">
                               {message.content}
                             </div>
@@ -572,6 +694,9 @@ export default function PlaygroundPage() {
                               estimateTokenCount(response.message.content)}{" "}
                             tokens · {response.message.latencyMs ?? "--"}ms
                           </span>
+                          <Badge variant="outline">
+                            {response.provider === "huggingface" ? "Hugging Face" : "Mock"}
+                          </Badge>
                           <Button
                             size="sm"
                             type="button"

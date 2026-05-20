@@ -86,6 +86,15 @@ type LoginPayload = {
   password: string;
 };
 
+type PlaygroundCompletionPayload = {
+  prompt: string;
+  systemPrompt?: string;
+  model?: string;
+  temperature?: number;
+  maxTokens?: number;
+  topP?: number;
+};
+
 type CreateApiKeyPayload = {
   name: string;
   environment: ApiKeyEnvironment;
@@ -403,6 +412,11 @@ class ApiClient {
   playground = {
     completion: (body: { prompt: string }) =>
       this.post<PlaygroundMessage>("/api/playground/completion", body),
+    huggingFaceCompletion: (body: PlaygroundCompletionPayload) =>
+      this.post<{ message: PlaygroundMessage; model: string; provider: "huggingface" }>(
+        "/api/playground/huggingface",
+        body,
+      ),
   };
 }
 
@@ -419,6 +433,7 @@ export type {
   LoginPayload,
   ModelListParams,
   PaginationParams,
+  PlaygroundCompletionPayload,
   QueryParams,
   RequestInterceptor,
   RequestOptions,

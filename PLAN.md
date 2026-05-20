@@ -365,23 +365,23 @@ Build the landing dashboard with these sections:
 
 ### 5.1 Playground Page (`/playground`)
 
-- [ ] Split-pane layout: Left config, right chat
-- [ ] **Model Selection**: Dropdown of available models
-- [ ] **Parameters**: Temperature, max tokens, top-p sliders
-- [ ] **System Prompt**: Editable textarea
-- [ ] **Chat Interface**:
+- [x] Split-pane layout: Left config, right chat
+- [x] **Model Selection**: Dropdown of available models
+- [x] **Parameters**: Temperature, max tokens, top-p sliders
+- [x] **System Prompt**: Editable textarea
+- [x] **Chat Interface**:
   - User message input
   - AI response with typing indicator
   - Message history with clear button
   - Copy/regenerate actions per message
-- [ ] **Metrics Panel**: Tokens used, latency, cost per request
-- [ ] **Compare Mode**: Side-by-side two models (bonus)
+- [x] **Metrics Panel**: Tokens used, latency, cost per request
+- [x] **Compare Mode**: Side-by-side two models (bonus)
 
 ### 5.2 Hugging Face Integration (Optional)
 
-- [ ] Integrate Hugging Face Inference API for real responses
-- [ ] Fallback to MSW mock if rate limited
-- [ ] Show "Powered by Hugging Face" badge
+- [x] Integrate Hugging Face Inference API for real responses
+- [x] Fallback to MSW mock if rate limited
+- [x] Show "Powered by Hugging Face" badge
 
 **Deliverable**: Interactive prompt testing interface demonstrating AI/ML product surface skills.
 
