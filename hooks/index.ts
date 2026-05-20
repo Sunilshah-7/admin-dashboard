@@ -1,4 +1,5 @@
 export { queryKeys } from "@/hooks/query-keys";
+export { useApiKeys, useCreateApiKey, useRevokeApiKey } from "@/hooks/use-api-keys";
 export { useAuditLogs } from "@/hooks/use-audit-logs";
 export { useBillingInvoices, useBillingUsage } from "@/hooks/use-billing";
 export { useDeploymentDetail, useDeployments } from "@/hooks/use-deployments";

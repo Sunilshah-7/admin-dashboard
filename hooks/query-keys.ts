@@ -40,6 +40,11 @@ const queryKeys = {
     invoices: (pagination?: PaginationParams) =>
       [...queryKeys.billing.all, "invoices", pagination ?? {}] as const,
   },
+  apiKeys: {
+    all: ["api-keys"] as const,
+    list: (pagination?: PaginationParams) =>
+      [...queryKeys.apiKeys.all, "list", pagination ?? {}] as const,
+  },
   playground: {
     all: ["playground"] as const,
     completion: () => [...queryKeys.playground.all, "completion"] as const,

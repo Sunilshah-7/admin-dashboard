@@ -1,6 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { http, HttpResponse } from "msw";
 
+import { createApiKey, generateApiKeys } from "@/mocks/data/api-keys";
 import { generateAuditLogs } from "@/mocks/data/audit-logs";
 import { generateBillingInvoices, generateBillingUsage } from "@/mocks/data/billing";
 import { generateDeployments } from "@/mocks/data/deployments";
@@ -18,6 +19,9 @@ import { generateMockCompletion } from "@/mocks/data/playground";
 import { generateTeamMembers, getRolePermissions } from "@/mocks/data/teams";
 import type {
   ApiResponse,
+  ApiKey,
+  ApiKeyEnvironment,
+  ApiKeyScope,
   AuditLogEntry,
   DeploymentEnvironment,
   DeploymentLog,
@@ -36,6 +40,7 @@ const teamMembers = generateTeamMembers(12);
 const auditLogs = generateAuditLogs(64);
 const billingUsage = generateBillingUsage();
 const billingInvoices = generateBillingInvoices(12);
+const apiKeys = generateApiKeys();
 
 const currentUser = {
   id: "user_admin",
@@ -355,6 +360,37 @@ const handlers = [
 
   http.get("/api/billing/invoices", ({ request }) => {
     return HttpResponse.json(paginate(request, billingInvoices));
+  }),
+
+  http.get("/api/api-keys", ({ request }) => {
+    return HttpResponse.json(paginate<ApiKey>(request, apiKeys));
+  }),
+
+  http.post("/api/api-keys", async ({ request }) => {
+    const body = await parseJsonBody<{
+      name: string;
+      environment: ApiKeyEnvironment;
+      scopes: ApiKeyScope[];
+      expiresAt: string;
+    }>(request);
+    const created = createApiKey(body);
+
+    apiKeys.unshift(created.apiKey);
+
+    return HttpResponse.json(ok(created), { status: 201 });
+  }),
+
+  http.patch("/api/api-keys/:id/revoke", ({ params }) => {
+    const apiKey = apiKeys.find((item) => item.id === String(params.id));
+
+    if (!apiKey) {
+      return notFound("API key not found");
+    }
+
+    apiKey.status = "revoked";
+    apiKey.revokedAt = new Date().toISOString();
+
+    return HttpResponse.json(ok(apiKey));
   }),
 
   http.post("/api/playground/completion", async ({ request }) => {

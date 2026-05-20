@@ -198,6 +198,28 @@ type BillingInvoice = {
   pdfUrl: string;
 };
 
+type ApiKeyEnvironment = "development" | "staging" | "production";
+type ApiKeyScope = "models:read" | "models:write" | "deployments:write" | "metrics:read";
+type ApiKeyStatus = "active" | "revoked";
+
+type ApiKey = {
+  id: string;
+  name: string;
+  prefix: string;
+  environment: ApiKeyEnvironment;
+  scopes: ApiKeyScope[];
+  status: ApiKeyStatus;
+  lastUsedAt?: string;
+  createdAt: string;
+  expiresAt?: string;
+  revokedAt?: string;
+};
+
+type CreatedApiKey = {
+  apiKey: ApiKey;
+  secretKey: string;
+};
+
 type PlaygroundRole = "system" | "user" | "assistant";
 
 type PlaygroundMessage = {
@@ -222,6 +244,10 @@ type PlaygroundSession = {
 };
 
 export type {
+  ApiKey,
+  ApiKeyEnvironment,
+  ApiKeyScope,
+  ApiKeyStatus,
   ApiError,
   ApiMeta,
   ApiResponse,
@@ -229,6 +255,7 @@ export type {
   AuditLogEntry,
   BillingInvoice,
   BillingUsage,
+  CreatedApiKey,
   Deployment,
   DeploymentEnvironment,
   DeploymentLog,

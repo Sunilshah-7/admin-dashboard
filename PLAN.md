@@ -325,7 +325,7 @@ Build the landing dashboard with these sections:
   - Role selection for demo users
   - Session and password policy settings
   - OAuth credential fields removed
-- [ ] **API Keys**:
+- [x] **API Keys**:
   - List of keys with name, prefix, last used, created date
   - Generate new key flow
   - Revoke key action
