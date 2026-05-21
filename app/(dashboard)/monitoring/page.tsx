@@ -15,12 +15,22 @@ import {
   X,
   Zap,
 } from "lucide-react";
-import { Area, AreaChart, CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  Line,
+  LineChart,
+  XAxis,
+  YAxis,
+} from "@/components/charts/dynamic-recharts";
 import {
   Table,
   TableBody,
@@ -417,7 +427,7 @@ export default function MonitoringPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
+          <Table aria-label="Alert rules">
             <TableHeader>
               <TableRow>
                 <TableHead>Condition</TableHead>

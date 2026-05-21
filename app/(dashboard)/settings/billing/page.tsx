@@ -2,14 +2,24 @@
 
 import { useMemo, useState } from "react";
 import { format } from "date-fns";
-import { Area, AreaChart, CartesianGrid, Bar, BarChart, XAxis, YAxis } from "recharts";
 import { Bell, CreditCard, Database, Gauge, Receipt, Server, Zap } from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  XAxis,
+  YAxis,
+} from "@/components/charts/dynamic-recharts";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -253,7 +263,7 @@ export default function BillingSettingsPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
+          <Table aria-label="Invoice history">
             <TableHeader>
               <TableRow>
                 <TableHead>Invoice</TableHead>

@@ -39,7 +39,7 @@ export default function ProductsPage() {
           <CardTitle>Sample products</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
+          <Table aria-label="Sample products">
             <TableHeader>
               <TableRow>
                 <TableHead>ID</TableHead>

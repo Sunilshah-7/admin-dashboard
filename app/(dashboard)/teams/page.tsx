@@ -39,35 +39,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useInviteTeamMember, useTeams, useUpdateTeamMemberRole } from "@/hooks";
+import { ROLE_PERMISSIONS } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
 import type { Permission, Role, TeamMember } from "@/types/api";
 
 const roles: Role[] = ["admin", "engineer", "viewer"];
 const workspaces = ["Production AI", "Research Lab", "Platform Ops"];
-
-const rolePermissions: Record<Role, Permission[]> = {
-  admin: [
-    "dashboard:read",
-    "models:read",
-    "models:write",
-    "deployments:read",
-    "deployments:write",
-    "teams:read",
-    "teams:write",
-    "monitoring:read",
-    "integrations:manage",
-    "settings:manage",
-  ],
-  engineer: [
-    "dashboard:read",
-    "models:read",
-    "models:write",
-    "deployments:read",
-    "deployments:write",
-    "monitoring:read",
-  ],
-  viewer: ["dashboard:read", "models:read", "deployments:read", "monitoring:read"],
-};
 
 const permissionGroups: Array<{ label: string; permission: Permission }> = [
   { label: "Dashboard", permission: "dashboard:read" },
@@ -144,7 +121,7 @@ function PermissionMatrix() {
         <CardTitle>Permission Matrix</CardTitle>
       </CardHeader>
       <CardContent>
-        <Table>
+        <Table aria-label="Permission matrix">
           <TableHeader>
             <TableRow>
               <TableHead>Access</TableHead>
@@ -160,7 +137,7 @@ function PermissionMatrix() {
               <TableRow key={item.permission}>
                 <TableCell className="font-medium">{item.label}</TableCell>
                 {roles.map((role) => {
-                  const allowed = rolePermissions[role].includes(item.permission);
+                  const allowed = ROLE_PERMISSIONS[role].includes(item.permission);
 
                   return (
                     <TableCell key={role}>
@@ -274,7 +251,7 @@ export default function TeamsPage() {
           <div className="text-sm text-muted-foreground">{members.length} members</div>
         </CardHeader>
         <CardContent>
-          <Table>
+          <Table aria-label="Team members">
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
@@ -451,7 +428,7 @@ export default function TeamsPage() {
                   Effective permissions
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {rolePermissions[draftRole].map((permission) => (
+                  {ROLE_PERMISSIONS[draftRole].map((permission) => (
                     <Badge key={permission} className="rounded-md" variant="outline">
                       {permission}
                     </Badge>

@@ -39,7 +39,7 @@ export default function UsersPage() {
           <CardTitle>Sample users</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
+          <Table aria-label="Sample users">
             <TableHeader>
               <TableRow>
                 <TableHead>ID</TableHead>

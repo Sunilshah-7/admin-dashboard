@@ -4,9 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:e2e": "next dev -H 127.0.0.1 -p 3100",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

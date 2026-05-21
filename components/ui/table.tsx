@@ -4,10 +4,19 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-function Table({ className, ...props }: React.ComponentProps<"table">) {
+function Table({ "aria-label": ariaLabel, className, ...props }: React.ComponentProps<"table">) {
+  const tableLabel = ariaLabel ?? "Data table";
+
   return (
-    <div data-slot="table-container" className="relative w-full overflow-x-auto">
+    <div
+      aria-label={`${tableLabel} scroll area`}
+      data-slot="table-container"
+      role="region"
+      tabIndex={0}
+      className="relative w-full overflow-x-auto rounded-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
+    >
       <table
+        aria-label={tableLabel}
         data-slot="table"
         className={cn("w-full caption-bottom text-sm", className)}
         {...props}
@@ -56,6 +65,7 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
 function TableHead({ className, ...props }: React.ComponentProps<"th">) {
   return (
     <th
+      scope="col"
       data-slot="table-head"
       className={cn(
         "h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground [&:has([role=checkbox])]:pr-0",

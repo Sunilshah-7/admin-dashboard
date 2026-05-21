@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type * as React from "react";
 import {
   Activity,
   CircleAlert,
@@ -9,12 +8,15 @@ import {
   DollarSign,
   Gauge,
   Info,
-  Minus,
-  TrendingDown,
-  TrendingUp,
   TriangleAlert,
   X,
 } from "lucide-react";
+
+import { MetricCard } from "@/components/dashboard/metric-card";
+import { MockApiStatus } from "@/components/dashboard/mock-api-status";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Area,
   AreaChart,
@@ -22,20 +24,16 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
   Line,
   LineChart,
   Pie,
   PieChart,
   XAxis,
   YAxis,
-} from "recharts";
-
-import { MockApiStatus } from "@/components/dashboard/mock-api-status";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "@/components/charts/dynamic-recharts";
 import {
   Table,
   TableBody,
@@ -307,71 +305,6 @@ function getAlertTone(severity: SystemAlert["severity"]) {
       "border-emerald-200 bg-emerald-50 text-emerald-950 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-100",
     icon: Info,
   };
-}
-
-function MetricCard({
-  children,
-  description,
-  icon: Icon,
-  isLoading,
-  label,
-  tone,
-  trend,
-  value,
-}: {
-  children?: React.ReactNode;
-  description: string;
-  icon: React.ComponentType<{ className?: string }>;
-  isLoading?: boolean;
-  label: string;
-  tone: string;
-  trend?: {
-    direction: "down" | "flat" | "up";
-    label: string;
-    positive?: boolean;
-  };
-  value: string;
-}) {
-  const TrendIcon =
-    trend?.direction === "down" ? TrendingDown : trend?.direction === "flat" ? Minus : TrendingUp;
-
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">{label}</CardTitle>
-        <Icon className={cn("size-4", tone)} />
-      </CardHeader>
-      <CardContent className="space-y-3">
-        {isLoading ? (
-          <>
-            <Skeleton className="h-8 w-24" />
-            <Skeleton className="h-4 w-32" />
-          </>
-        ) : (
-          <>
-            <div className="text-2xl font-semibold tabular-nums">{value}</div>
-            <div className="flex min-h-5 flex-wrap items-center gap-x-2 gap-y-1 text-xs">
-              {trend ? (
-                <span
-                  className={cn(
-                    "inline-flex items-center gap-1 font-medium",
-                    trend.positive
-                      ? "text-emerald-600 dark:text-emerald-400"
-                      : "text-muted-foreground",
-                  )}
-                >
-                  <TrendIcon className="size-3.5" />
-                  {trend.label}
-                </span>
-              ) : null}
-              <span className="text-muted-foreground">{description}</span>
-            </div>
-          </>
-        )}
-        {children}
-      </CardContent>
-    </Card>
-  );
 }
 
 export default function DashboardPage() {
@@ -850,7 +783,7 @@ export default function DashboardPage() {
             <CardTitle>Recent Deployments</CardTitle>
           </CardHeader>
           <CardContent>
-            <Table>
+            <Table aria-label="Recent deployments">
               <TableHeader>
                 <TableRow>
                   <TableHead>Model</TableHead>

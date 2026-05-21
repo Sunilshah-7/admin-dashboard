@@ -481,7 +481,7 @@ export default function ModelsPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <Table>
+          <Table aria-label="Model registry">
             <TableHeader>
               <TableRow>
                 <TableHead className="w-10">

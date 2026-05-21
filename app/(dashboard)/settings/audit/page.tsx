@@ -218,7 +218,7 @@ export default function AuditSettingsPage() {
           <Badge variant="outline">{filteredLogs.length} records</Badge>
         </CardHeader>
         <CardContent>
-          <Table>
+          <Table aria-label="Audit activity">
             <TableHeader>
               <TableRow>
                 <TableHead>Timestamp</TableHead>

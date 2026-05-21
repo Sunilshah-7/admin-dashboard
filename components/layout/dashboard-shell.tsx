@@ -19,7 +19,6 @@ import {
   Play,
   Search,
   Settings,
-  ShieldCheck,
   Sun,
   Users,
 } from "lucide-react";
@@ -114,31 +113,63 @@ function ThemeToggle() {
 }
 
 function SidebarContent({
+  brand,
+  brandCollapsed,
   collapsed = false,
   onNavigate,
 }: {
+  brand?: React.ReactNode;
+  brandCollapsed?: React.ReactNode;
   collapsed?: boolean;
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
   const role = useAuthStore((state) => getActiveRole(state.roles));
   const visibleNavigationItems = getVisibleNavigationItems(role);
+  const navRef = React.useRef<HTMLElement>(null);
+
+  function handleSidebarKeyDown(event: React.KeyboardEvent<HTMLElement>) {
+    if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) {
+      return;
+    }
+
+    const links = Array.from(navRef.current?.querySelectorAll<HTMLAnchorElement>("a[href]") ?? []);
+    const activeIndex = links.findIndex((link) => link === document.activeElement);
+
+    if (!links.length) {
+      return;
+    }
+
+    event.preventDefault();
+
+    if (event.key === "Home") {
+      links[0]?.focus();
+      return;
+    }
+
+    if (event.key === "End") {
+      links.at(-1)?.focus();
+      return;
+    }
+
+    const nextIndex =
+      event.key === "ArrowDown"
+        ? (activeIndex + 1) % links.length
+        : (activeIndex - 1 + links.length) % links.length;
+
+    links[nextIndex]?.focus();
+  }
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex h-16 items-center gap-3 px-4">
-        <div className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-          <ShieldCheck className="size-5" />
-        </div>
-        {!collapsed ? (
-          <div className="min-w-0">
-            <div className="truncate text-sm font-semibold">Reflection AI</div>
-            <div className="truncate text-xs text-muted-foreground">Infrastructure Console</div>
-          </div>
-        ) : null}
-      </div>
+      <div className="flex h-16 items-center gap-3 px-4">{collapsed ? brandCollapsed : brand}</div>
       <Separator />
-      <nav className="flex-1 space-y-1 p-2">
+      <nav
+        ref={navRef}
+        aria-label="Primary navigation"
+        className="flex-1 space-y-1 p-2"
+        onKeyDown={handleSidebarKeyDown}
+      >
         {visibleNavigationItems.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
           const Icon = item.icon;
@@ -146,7 +177,9 @@ function SidebarContent({
           return (
             <Link
               key={item.href}
+              aria-current={isActive ? "page" : undefined}
               href={item.href}
+              prefetch
               onClick={onNavigate}
               className={cn(
                 "flex h-9 items-center gap-3 rounded-md px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
@@ -185,9 +218,13 @@ function SidebarContent({
 }
 
 function Topbar({
+  brand,
+  brandCollapsed,
   collapsed,
   onToggleCollapsed,
 }: {
+  brand?: React.ReactNode;
+  brandCollapsed?: React.ReactNode;
   collapsed: boolean;
   onToggleCollapsed: () => void;
 }) {
@@ -215,7 +252,11 @@ function Topbar({
           <SheetHeader className="sr-only">
             <SheetTitle>Dashboard navigation</SheetTitle>
           </SheetHeader>
-          <SidebarContent onNavigate={() => setMobileOpen(false)} />
+          <SidebarContent
+            brand={brand}
+            brandCollapsed={brandCollapsed}
+            onNavigate={() => setMobileOpen(false)}
+          />
         </SheetContent>
       </Sheet>
 
@@ -244,6 +285,8 @@ function Topbar({
         {(["admin", "engineer", "viewer"] satisfies Role[]).map((item) => (
           <Button
             key={item}
+            aria-label={`Switch to ${roleLabels[item]} role`}
+            aria-pressed={role === item}
             type="button"
             size="xs"
             variant={role === item ? "secondary" : "ghost"}
@@ -271,7 +314,15 @@ function Topbar({
   );
 }
 
-function DashboardShell({ children }: { children: React.ReactNode }) {
+function DashboardShell({
+  brand,
+  brandCollapsed,
+  children,
+}: {
+  brand?: React.ReactNode;
+  brandCollapsed?: React.ReactNode;
+  children: React.ReactNode;
+}) {
   const pathname = usePathname();
   const router = useRouter();
   const collapsed = useUiStore((state) => state.isSidebarCollapsed);
@@ -299,7 +350,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
           collapsed ? "w-16" : "w-72",
         )}
       >
-        <SidebarContent collapsed={collapsed} />
+        <SidebarContent brand={brand} brandCollapsed={brandCollapsed} collapsed={collapsed} />
       </aside>
       <div
         className={cn(
@@ -307,7 +358,12 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
           collapsed ? "lg:pl-16" : "lg:pl-72",
         )}
       >
-        <Topbar collapsed={collapsed} onToggleCollapsed={toggleCollapsed} />
+        <Topbar
+          brand={brand}
+          brandCollapsed={brandCollapsed}
+          collapsed={collapsed}
+          onToggleCollapsed={toggleCollapsed}
+        />
         <main className="mx-auto w-full max-w-7xl p-4 sm:p-6 lg:p-8">{children}</main>
       </div>
     </div>

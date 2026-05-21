@@ -391,35 +391,35 @@ Build the landing dashboard with these sections:
 
 ### 6.1 Performance Optimizations
 
-- [ ] Use React Server Components for static layout parts
-- [ ] Dynamic imports for heavy chart components
-- [ ] Image optimization with `next/image`
-- [ ] Route prefetching for sidebar links
-- [ ] Add `loading.tsx` skeletons for all routes
-- [ ] Add `error.tsx` error boundaries
-- [ ] Implement `not-found.tsx` for 404s
+- [x] Use React Server Components for static layout parts
+- [x] Dynamic imports for heavy chart components
+- [x] Image optimization with `next/image`
+- [x] Route prefetching for sidebar links
+- [x] Add `loading.tsx` skeletons for all routes
+- [x] Add `error.tsx` error boundaries
+- [x] Implement `not-found.tsx` for 404s
 
 ### 6.2 Accessibility
 
-- [ ] Keyboard navigation for sidebar, tables, modals
-- [ ] ARIA labels on all interactive elements
-- [ ] Focus visible states
-- [ ] Screen reader friendly data tables
-- [ ] Reduced motion support
-- [ ] Color contrast compliance (WCAG 2.1 AA)
+- [x] Keyboard navigation for sidebar, tables, modals
+- [x] ARIA labels on all interactive elements
+- [x] Focus visible states
+- [x] Screen reader friendly data tables
+- [x] Reduced motion support
+- [x] Color contrast compliance (WCAG 2.1 AA)
 
 ### 6.3 Testing
 
-- [ ] **Unit Tests** (Vitest):
+- [x] **Unit Tests** (Vitest):
   - Utility functions (formatters, permissions)
   - Zustand store actions
   - Zod validation schemas
-- [ ] **Component Tests** (React Testing Library):
+- [x] **Component Tests** (React Testing Library):
   - Metric cards render correctly
   - Table sorting/filtering works
   - Form validation shows errors
   - RBAC guards hide/show elements
-- [ ] **E2E Tests** (Playwright):
+- [x] **E2E Tests** (Playwright):
   - Login flow
   - Dashboard loads with data
   - Model registry navigation
@@ -428,14 +428,14 @@ Build the landing dashboard with these sections:
 
 ### 6.4 Documentation
 
-- [ ] Update README with:
+- [x] Update README with:
   - Project description (enterprise AI platform dashboard)
   - Tech stack and architecture
   - Setup instructions
   - Mock API documentation
   - Screenshots/GIFs of key features
-- [ ] Add `ARCHITECTURE.md` explaining data flow
-- [ ] Add `CONTRIBUTING.md` for future extension
+- [x] Add `ARCHITECTURE.md` explaining data flow
+- [x] Add `CONTRIBUTING.md` for future extension
 
 ### 6.5 Deployment
 

@@ -60,7 +60,7 @@
   --secondary: oklch(0.968 0.007 247.896);
   --secondary-foreground: oklch(0.208 0.042 265.755);
   --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
+  --muted-foreground: oklch(0.45 0.046 257.417);
   --accent: oklch(0.962 0.044 156.743);
   --accent-foreground: oklch(0.262 0.051 172.552);
   --destructive: oklch(0.586 0.253 17.585);
@@ -121,10 +121,29 @@
   * {
     @apply border-border outline-ring/50;
   }
+  *:focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+  }
   body {
     @apply bg-background text-foreground;
   }
   html {
     @apply font-sans;
+  }
+  a {
+    @apply rounded-sm;
+  }
+  ::selection {
+    @apply bg-primary/20 text-foreground;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }

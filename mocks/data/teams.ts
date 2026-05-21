@@ -1,30 +1,7 @@
 import { faker } from "@faker-js/faker";
 
-import type { Permission, Role, TeamMember } from "@/types/api";
-
-const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
-  admin: [
-    "dashboard:read",
-    "models:read",
-    "models:write",
-    "deployments:read",
-    "deployments:write",
-    "teams:read",
-    "teams:write",
-    "monitoring:read",
-    "integrations:manage",
-    "settings:manage",
-  ],
-  engineer: [
-    "dashboard:read",
-    "models:read",
-    "models:write",
-    "deployments:read",
-    "deployments:write",
-    "monitoring:read",
-  ],
-  viewer: ["dashboard:read", "models:read", "deployments:read", "monitoring:read"],
-};
+import { ROLE_PERMISSIONS } from "@/lib/permissions";
+import type { Role, TeamMember } from "@/types/api";
 
 const ROLES: Role[] = ["admin", "engineer", "viewer"];
 
