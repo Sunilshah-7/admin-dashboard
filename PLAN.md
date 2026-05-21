@@ -410,16 +410,16 @@ Build the landing dashboard with these sections:
 
 ### 6.3 Testing
 
-- [ ] **Unit Tests** (Vitest):
+- [x] **Unit Tests** (Vitest):
   - Utility functions (formatters, permissions)
   - Zustand store actions
   - Zod validation schemas
-- [ ] **Component Tests** (React Testing Library):
+- [x] **Component Tests** (React Testing Library):
   - Metric cards render correctly
   - Table sorting/filtering works
   - Form validation shows errors
   - RBAC guards hide/show elements
-- [ ] **E2E Tests** (Playwright):
+- [x] **E2E Tests** (Playwright):
   - Login flow
   - Dashboard loads with data
   - Model registry navigation
@@ -428,14 +428,14 @@ Build the landing dashboard with these sections:
 
 ### 6.4 Documentation
 
-- [ ] Update README with:
+- [x] Update README with:
   - Project description (enterprise AI platform dashboard)
   - Tech stack and architecture
   - Setup instructions
   - Mock API documentation
   - Screenshots/GIFs of key features
-- [ ] Add `ARCHITECTURE.md` explaining data flow
-- [ ] Add `CONTRIBUTING.md` for future extension
+- [x] Add `ARCHITECTURE.md` explaining data flow
+- [x] Add `CONTRIBUTING.md` for future extension
 
 ### 6.5 Deployment
 
