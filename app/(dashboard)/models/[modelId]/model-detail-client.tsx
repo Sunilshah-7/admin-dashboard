@@ -381,7 +381,7 @@ function ModelDetailClient({ modelId }: { modelId: string }) {
           <CardTitle>Version History</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
+          <Table aria-label="Model version history">
             <TableHeader>
               <TableRow>
                 <TableHead>Version</TableHead>

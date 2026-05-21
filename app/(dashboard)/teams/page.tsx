@@ -144,7 +144,7 @@ function PermissionMatrix() {
         <CardTitle>Permission Matrix</CardTitle>
       </CardHeader>
       <CardContent>
-        <Table>
+        <Table aria-label="Permission matrix">
           <TableHeader>
             <TableRow>
               <TableHead>Access</TableHead>
@@ -274,7 +274,7 @@ export default function TeamsPage() {
           <div className="text-sm text-muted-foreground">{members.length} members</div>
         </CardHeader>
         <CardContent>
-          <Table>
+          <Table aria-label="Team members">
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>

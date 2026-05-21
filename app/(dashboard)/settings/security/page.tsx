@@ -184,7 +184,7 @@ export default function SecuritySettingsPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
+          <Table aria-label="Active sessions">
             <TableHeader>
               <TableRow>
                 <TableHead>Device</TableHead>

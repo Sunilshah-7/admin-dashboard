@@ -852,7 +852,7 @@ export default function DashboardPage() {
             <CardTitle>Recent Deployments</CardTitle>
           </CardHeader>
           <CardContent>
-            <Table>
+            <Table aria-label="Recent deployments">
               <TableHeader>
                 <TableRow>
                   <TableHead>Model</TableHead>

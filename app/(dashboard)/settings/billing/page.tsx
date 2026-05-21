@@ -263,7 +263,7 @@ export default function BillingSettingsPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
+          <Table aria-label="Invoice history">
             <TableHeader>
               <TableRow>
                 <TableHead>Invoice</TableHead>

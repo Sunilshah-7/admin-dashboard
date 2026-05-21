@@ -126,12 +126,50 @@ function SidebarContent({
   const pathname = usePathname();
   const role = useAuthStore((state) => getActiveRole(state.roles));
   const visibleNavigationItems = getVisibleNavigationItems(role);
+  const navRef = React.useRef<HTMLElement>(null);
+
+  function handleSidebarKeyDown(event: React.KeyboardEvent<HTMLElement>) {
+    if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) {
+      return;
+    }
+
+    const links = Array.from(navRef.current?.querySelectorAll<HTMLAnchorElement>("a[href]") ?? []);
+    const activeIndex = links.findIndex((link) => link === document.activeElement);
+
+    if (!links.length) {
+      return;
+    }
+
+    event.preventDefault();
+
+    if (event.key === "Home") {
+      links[0]?.focus();
+      return;
+    }
+
+    if (event.key === "End") {
+      links.at(-1)?.focus();
+      return;
+    }
+
+    const nextIndex =
+      event.key === "ArrowDown"
+        ? (activeIndex + 1) % links.length
+        : (activeIndex - 1 + links.length) % links.length;
+
+    links[nextIndex]?.focus();
+  }
 
   return (
     <div className="flex h-full flex-col">
       <div className="flex h-16 items-center gap-3 px-4">{collapsed ? brandCollapsed : brand}</div>
       <Separator />
-      <nav className="flex-1 space-y-1 p-2">
+      <nav
+        ref={navRef}
+        aria-label="Primary navigation"
+        className="flex-1 space-y-1 p-2"
+        onKeyDown={handleSidebarKeyDown}
+      >
         {visibleNavigationItems.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
           const Icon = item.icon;
@@ -139,6 +177,7 @@ function SidebarContent({
           return (
             <Link
               key={item.href}
+              aria-current={isActive ? "page" : undefined}
               href={item.href}
               prefetch
               onClick={onNavigate}
@@ -246,6 +285,8 @@ function Topbar({
         {(["admin", "engineer", "viewer"] satisfies Role[]).map((item) => (
           <Button
             key={item}
+            aria-label={`Switch to ${roleLabels[item]} role`}
+            aria-pressed={role === item}
             type="button"
             size="xs"
             variant={role === item ? "secondary" : "ghost"}

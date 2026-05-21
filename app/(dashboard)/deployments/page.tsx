@@ -235,7 +235,7 @@ export default function DeploymentsPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <Table>
+          <Table aria-label="Deployment list">
             <TableHeader>
               <TableRow>
                 <TableHead>Commit SHA</TableHead>

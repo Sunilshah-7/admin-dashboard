@@ -427,7 +427,7 @@ export default function MonitoringPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
+          <Table aria-label="Alert rules">
             <TableHeader>
               <TableRow>
                 <TableHead>Condition</TableHead>

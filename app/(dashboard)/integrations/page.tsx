@@ -395,7 +395,7 @@ export default function IntegrationsPage() {
           </Button>
         </CardHeader>
         <CardContent>
-          <Table>
+          <Table aria-label="API keys">
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
@@ -492,7 +492,7 @@ export default function IntegrationsPage() {
             </Button>
           </CardHeader>
           <CardContent>
-            <Table>
+            <Table aria-label="Webhooks">
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
@@ -564,7 +564,7 @@ export default function IntegrationsPage() {
             </p>
           </CardHeader>
           <CardContent>
-            <Table>
+            <Table aria-label="Webhook delivery history">
               <TableHeader>
                 <TableRow>
                   <TableHead>Event</TableHead>
