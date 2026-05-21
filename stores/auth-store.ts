@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+import { ROLE_PERMISSIONS } from "@/lib/permissions";
 import type { Permission, Role } from "@/types/api";
 
 type AuthUser = {
@@ -26,30 +27,6 @@ type AuthState = {
   setSessionRole: (role: Role) => void;
   hasRole: (role: Role) => boolean;
   hasPermission: (permission: Permission) => boolean;
-};
-
-const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
-  admin: [
-    "dashboard:read",
-    "models:read",
-    "models:write",
-    "deployments:read",
-    "deployments:write",
-    "teams:read",
-    "teams:write",
-    "monitoring:read",
-    "integrations:manage",
-    "settings:manage",
-  ],
-  engineer: [
-    "dashboard:read",
-    "models:read",
-    "models:write",
-    "deployments:read",
-    "deployments:write",
-    "monitoring:read",
-  ],
-  viewer: ["dashboard:read", "models:read", "deployments:read", "monitoring:read"],
 };
 
 const useAuthStore = create<AuthState>()(

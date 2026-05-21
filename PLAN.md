@@ -401,12 +401,12 @@ Build the landing dashboard with these sections:
 
 ### 6.2 Accessibility
 
-- [ ] Keyboard navigation for sidebar, tables, modals
-- [ ] ARIA labels on all interactive elements
-- [ ] Focus visible states
-- [ ] Screen reader friendly data tables
-- [ ] Reduced motion support
-- [ ] Color contrast compliance (WCAG 2.1 AA)
+- [x] Keyboard navigation for sidebar, tables, modals
+- [x] ARIA labels on all interactive elements
+- [x] Focus visible states
+- [x] Screen reader friendly data tables
+- [x] Reduced motion support
+- [x] Color contrast compliance (WCAG 2.1 AA)
 
 ### 6.3 Testing
 
