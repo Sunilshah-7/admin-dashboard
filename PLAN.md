@@ -391,13 +391,13 @@ Build the landing dashboard with these sections:
 
 ### 6.1 Performance Optimizations
 
-- [ ] Use React Server Components for static layout parts
-- [ ] Dynamic imports for heavy chart components
-- [ ] Image optimization with `next/image`
-- [ ] Route prefetching for sidebar links
-- [ ] Add `loading.tsx` skeletons for all routes
-- [ ] Add `error.tsx` error boundaries
-- [ ] Implement `not-found.tsx` for 404s
+- [x] Use React Server Components for static layout parts
+- [x] Dynamic imports for heavy chart components
+- [x] Image optimization with `next/image`
+- [x] Route prefetching for sidebar links
+- [x] Add `loading.tsx` skeletons for all routes
+- [x] Add `error.tsx` error boundaries
+- [x] Implement `not-found.tsx` for 404s
 
 ### 6.2 Accessibility
 

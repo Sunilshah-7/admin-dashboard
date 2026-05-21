@@ -3,12 +3,20 @@
 import Link from "next/link";
 import type * as React from "react";
 import { Activity, ArrowLeft, ExternalLink, GitBranch, Rocket, ShieldCheck } from "lucide-react";
-import { Line, LineChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import {
+  CartesianGrid,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  Line,
+  LineChart,
+  XAxis,
+  YAxis,
+} from "@/components/charts/dynamic-recharts";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,

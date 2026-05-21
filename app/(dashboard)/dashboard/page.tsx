@@ -15,6 +15,11 @@ import {
   TriangleAlert,
   X,
 } from "lucide-react";
+
+import { MockApiStatus } from "@/components/dashboard/mock-api-status";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Area,
   AreaChart,
@@ -22,19 +27,16 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
   Line,
   LineChart,
   Pie,
   PieChart,
   XAxis,
   YAxis,
-} from "recharts";
-
-import { MockApiStatus } from "@/components/dashboard/mock-api-status";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+} from "@/components/charts/dynamic-recharts";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,

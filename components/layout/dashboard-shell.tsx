@@ -19,7 +19,6 @@ import {
   Play,
   Search,
   Settings,
-  ShieldCheck,
   Sun,
   Users,
 } from "lucide-react";
@@ -114,9 +113,13 @@ function ThemeToggle() {
 }
 
 function SidebarContent({
+  brand,
+  brandCollapsed,
   collapsed = false,
   onNavigate,
 }: {
+  brand?: React.ReactNode;
+  brandCollapsed?: React.ReactNode;
   collapsed?: boolean;
   onNavigate?: () => void;
 }) {
@@ -126,17 +129,7 @@ function SidebarContent({
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex h-16 items-center gap-3 px-4">
-        <div className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-          <ShieldCheck className="size-5" />
-        </div>
-        {!collapsed ? (
-          <div className="min-w-0">
-            <div className="truncate text-sm font-semibold">Reflection AI</div>
-            <div className="truncate text-xs text-muted-foreground">Infrastructure Console</div>
-          </div>
-        ) : null}
-      </div>
+      <div className="flex h-16 items-center gap-3 px-4">{collapsed ? brandCollapsed : brand}</div>
       <Separator />
       <nav className="flex-1 space-y-1 p-2">
         {visibleNavigationItems.map((item) => {
@@ -147,6 +140,7 @@ function SidebarContent({
             <Link
               key={item.href}
               href={item.href}
+              prefetch
               onClick={onNavigate}
               className={cn(
                 "flex h-9 items-center gap-3 rounded-md px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
@@ -185,9 +179,13 @@ function SidebarContent({
 }
 
 function Topbar({
+  brand,
+  brandCollapsed,
   collapsed,
   onToggleCollapsed,
 }: {
+  brand?: React.ReactNode;
+  brandCollapsed?: React.ReactNode;
   collapsed: boolean;
   onToggleCollapsed: () => void;
 }) {
@@ -215,7 +213,11 @@ function Topbar({
           <SheetHeader className="sr-only">
             <SheetTitle>Dashboard navigation</SheetTitle>
           </SheetHeader>
-          <SidebarContent onNavigate={() => setMobileOpen(false)} />
+          <SidebarContent
+            brand={brand}
+            brandCollapsed={brandCollapsed}
+            onNavigate={() => setMobileOpen(false)}
+          />
         </SheetContent>
       </Sheet>
 
@@ -271,7 +273,15 @@ function Topbar({
   );
 }
 
-function DashboardShell({ children }: { children: React.ReactNode }) {
+function DashboardShell({
+  brand,
+  brandCollapsed,
+  children,
+}: {
+  brand?: React.ReactNode;
+  brandCollapsed?: React.ReactNode;
+  children: React.ReactNode;
+}) {
   const pathname = usePathname();
   const router = useRouter();
   const collapsed = useUiStore((state) => state.isSidebarCollapsed);
@@ -299,7 +309,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
           collapsed ? "w-16" : "w-72",
         )}
       >
-        <SidebarContent collapsed={collapsed} />
+        <SidebarContent brand={brand} brandCollapsed={brandCollapsed} collapsed={collapsed} />
       </aside>
       <div
         className={cn(
@@ -307,7 +317,12 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
           collapsed ? "lg:pl-16" : "lg:pl-72",
         )}
       >
-        <Topbar collapsed={collapsed} onToggleCollapsed={toggleCollapsed} />
+        <Topbar
+          brand={brand}
+          brandCollapsed={brandCollapsed}
+          collapsed={collapsed}
+          onToggleCollapsed={toggleCollapsed}
+        />
         <main className="mx-auto w-full max-w-7xl p-4 sm:p-6 lg:p-8">{children}</main>
       </div>
     </div>
