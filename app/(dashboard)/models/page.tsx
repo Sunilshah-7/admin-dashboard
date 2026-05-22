@@ -110,7 +110,7 @@ function DeployNewModelWizard({
   onOpenChange: (open: boolean) => void;
 }) {
   const [step, setStep] = useState<WizardStep>("configure");
-  const [modelName, setModelName] = useState("Reflection Candidate");
+  const [modelName, setModelName] = useState("IMD Candidate");
   const [modelType, setModelType] =
     useState<Extract<ModelType, "Embedding" | "LLM" | "Vision">>("LLM");
   const [environment, setEnvironment] = useState<DeploymentEnvironment>("staging");
@@ -188,7 +188,7 @@ function DeployNewModelWizard({
               <label htmlFor="artifact" className="text-sm font-medium">
                 Artifact URI
               </label>
-              <Input id="artifact" defaultValue="s3://reflection-model-registry/candidate/v1" />
+              <Input id="artifact" defaultValue="s3://imd-model-registry/candidate/v1" />
             </div>
           </div>
         ) : null}

@@ -11,7 +11,7 @@ describe("MetricCard", () => {
         description="avg cluster load"
         icon={Cpu}
         label="GPU Utilization"
-        tone="text-blue-500"
+        tone="text-primary"
         trend={{ direction: "down", label: "-8.1% vs earlier", positive: true }}
         value="57%"
       />,

@@ -207,7 +207,7 @@ function SidebarContent({
           {!collapsed ? (
             <div className="mt-3">
               <div className="text-sm font-medium">Platform Admin</div>
-              <div className="text-xs text-muted-foreground">admin@reflection.ai</div>
+              <div className="text-xs text-muted-foreground">admin@imd.ai</div>
               <div className="mt-2 text-xs font-medium text-primary">{roleLabels[role]}</div>
             </div>
           ) : null}

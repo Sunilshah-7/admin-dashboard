@@ -55,7 +55,7 @@ const useAuthStore = create<AuthState>()(
           user: state.user ?? {
             id: "user_admin",
             name: "Platform Admin",
-            email: "admin@reflection.ai",
+            email: "admin@imd.ai",
           },
           roles: [role],
           permissions: ROLE_PERMISSIONS[role],
@@ -65,7 +65,7 @@ const useAuthStore = create<AuthState>()(
       hasPermission: (permission) => get().permissions.includes(permission),
     }),
     {
-      name: "reflection-auth",
+      name: "imd-auth",
       partialize: ({ user, roles, permissions, isAuthenticated }) => ({
         user,
         roles,

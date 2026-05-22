@@ -23,7 +23,7 @@ function generateTeamMembers(count = 12): TeamMember[] {
     return {
       id: `team_member_${index + 1}`,
       name: `${firstName} ${lastName}`,
-      email: faker.internet.email({ firstName, lastName, provider: "reflection.ai" }).toLowerCase(),
+      email: faker.internet.email({ firstName, lastName, provider: "imd.ai" }).toLowerCase(),
       avatarUrl: faker.image.avatar(),
       role,
       permissions: ROLE_PERMISSIONS[role],

@@ -60,8 +60,8 @@ export default function LoginPage() {
             <ShieldCheck className="size-5" />
           </div>
           <div>
-            <div className="text-sm font-semibold">Reflection AI</div>
-            <div className="text-xs text-muted-foreground">Infrastructure Console</div>
+            <div className="text-sm font-semibold">IMD</div>
+            <div className="text-xs text-muted-foreground">Infrastructure Management Dashboard</div>
           </div>
         </div>
 

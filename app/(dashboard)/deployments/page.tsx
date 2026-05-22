@@ -91,7 +91,7 @@ function getStageTone(status: DeploymentStageStatus) {
   if (status === "running") {
     return {
       className:
-        "border-blue-200 bg-blue-50 text-blue-950 dark:border-blue-900/60 dark:bg-blue-950/30 dark:text-blue-100",
+        "border-[#f4b4a8] bg-[#fff1ec] text-[#8f3328] dark:border-[#8f4a40]/60 dark:bg-[#4d241f]/30 dark:text-[#ffb8aa]",
       icon: Loader2,
     };
   }

@@ -11,7 +11,7 @@ describe("PermissionGuard", () => {
 
   it("shows children when role and permission match", () => {
     useAuthStore.getState().login({
-      user: { email: "admin@reflection.ai", id: "admin", name: "Platform Admin" },
+      user: { email: "admin@imd.ai", id: "admin", name: "Platform Admin" },
       roles: ["admin"],
       permissions: ROLE_PERMISSIONS.admin,
     });

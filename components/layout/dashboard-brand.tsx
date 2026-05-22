@@ -7,7 +7,7 @@ function DashboardBrand() {
         <ShieldCheck className="size-5" />
       </div>
       <div className="min-w-0">
-        <div className="truncate text-sm font-semibold">Reflection AI</div>
+        <div className="truncate text-sm font-semibold">IMD AI</div>
         <div className="truncate text-xs text-muted-foreground">Infrastructure Console</div>
       </div>
     </>

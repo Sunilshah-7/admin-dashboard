@@ -9,7 +9,7 @@ describe("auth store", () => {
 
   it("logs users in and out", () => {
     useAuthStore.getState().login({
-      user: { email: "admin@reflection.ai", id: "admin", name: "Platform Admin" },
+      user: { email: "admin@imd.ai", id: "admin", name: "Platform Admin" },
       roles: ["admin"],
       permissions: ROLE_PERMISSIONS.admin,
     });

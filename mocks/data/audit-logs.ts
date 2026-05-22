@@ -53,7 +53,7 @@ function generateAuditLogs(count = 64): AuditLogEntry[] {
       ipAddress: faker.internet.ipv4(),
       userAgent: faker.internet.userAgent(),
       metadata: {
-        workspace: "reflection-prod",
+        workspace: "imd-prod",
         region: faker.helpers.arrayElement(["us-east-1", "us-west-2", "eu-west-1"]),
       },
     };

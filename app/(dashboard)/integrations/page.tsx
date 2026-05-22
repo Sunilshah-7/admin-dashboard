@@ -744,7 +744,7 @@ export default function IntegrationsPage() {
               </label>
               <Input
                 id="webhookUrl"
-                placeholder="https://example.com/reflection/events"
+                placeholder="https://example.com/events"
                 type="url"
                 value={webhookUrl}
                 onChange={(event) => setWebhookUrl(event.target.value)}

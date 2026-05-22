@@ -11,7 +11,7 @@ describe("validators", () => {
   it("validates team invitations", () => {
     expect(
       inviteMemberSchema.safeParse({
-        email: "teammate@reflection.ai",
+        email: "teammate@imd.ai",
         role: "engineer",
         workspace: "Production AI",
       }).success,
