@@ -212,6 +212,7 @@ function resolveCdnInvalidation(value = "dummy") {
 var open_next_config_default = defineCloudflareConfig({
   // For best results consider enabling R2 caching:
   // https://opennext.js.org/cloudflare/caching
+  buildCommand: "npm run build:next"
 });
 export {
   open_next_config_default as default
