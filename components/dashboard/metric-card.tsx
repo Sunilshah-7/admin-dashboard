@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
 import type * as React from "react";
 import { Minus, TrendingDown, TrendingUp } from "lucide-react";
 
@@ -6,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
 type MetricCardProps = {
+  animateValue?: boolean;
   children?: React.ReactNode;
   description: string;
   icon: React.ComponentType<{ className?: string }>;
@@ -20,7 +24,91 @@ type MetricCardProps = {
   value: string;
 };
 
+function getNumericParts(value: string) {
+  const match = /^(?<prefix>[^\d-]*)(?<number>-?\d[\d,]*(?:\.\d+)?)(?<suffix>.*)$/.exec(value);
+
+  if (!match?.groups) {
+    return null;
+  }
+
+  const rawNumber = match.groups.number;
+  if (!rawNumber) {
+    return null;
+  }
+
+  const numericValue = Number(rawNumber.replaceAll(",", ""));
+
+  if (Number.isNaN(numericValue)) {
+    return null;
+  }
+
+  return {
+    decimals: rawNumber.includes(".") ? rawNumber.split(".")[1]?.length ?? 0 : 0,
+    number: numericValue,
+    prefix: match.groups.prefix,
+    suffix: match.groups.suffix,
+    usesGrouping: rawNumber.includes(","),
+  };
+}
+
+function AnimatedMetricValue({ isActive = false, value }: { isActive?: boolean; value: string }) {
+  const parts = useMemo(() => getNumericParts(value), [value]);
+  const [displayValue, setDisplayValue] = useState(value);
+
+  useEffect(() => {
+    if (!isActive || !parts || !window.requestAnimationFrame) {
+      setDisplayValue(value);
+      return;
+    }
+
+    const prefersReducedMotion =
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (prefersReducedMotion) {
+      setDisplayValue(value);
+      return;
+    }
+
+    let animationFrame = 0;
+    let startTime: number | undefined;
+    const duration = 900;
+    const formatter = new Intl.NumberFormat("en-US", {
+      maximumFractionDigits: parts.decimals,
+      minimumFractionDigits: parts.decimals,
+      useGrouping: parts.usesGrouping,
+    });
+
+    const tick = (timestamp: number) => {
+      startTime ??= timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      const easedProgress = 1 - (1 - progress) ** 3;
+      const nextValue = parts.number * easedProgress;
+
+      setDisplayValue(`${parts.prefix}${formatter.format(nextValue)}${parts.suffix}`);
+
+      if (progress < 1) {
+        animationFrame = window.requestAnimationFrame(tick);
+      } else {
+        setDisplayValue(value);
+      }
+    };
+
+    setDisplayValue(`${parts.prefix}${formatter.format(0)}${parts.suffix}`);
+    animationFrame = window.requestAnimationFrame(tick);
+
+    return () => window.cancelAnimationFrame(animationFrame);
+  }, [isActive, parts, value]);
+
+  return (
+    <span aria-label={value} className="inline-block min-w-[3ch]">
+      {displayValue}
+    </span>
+  );
+}
+
 function MetricCard({
+  animateValue,
   children,
   description,
   icon: Icon,
@@ -47,7 +135,9 @@ function MetricCard({
           </>
         ) : (
           <>
-            <div className="text-2xl font-semibold tabular-nums">{value}</div>
+            <div className="text-2xl font-semibold tabular-nums">
+              <AnimatedMetricValue isActive={animateValue} value={value} />
+            </div>
             <div className="flex min-h-5 flex-wrap items-center gap-x-2 gap-y-1 text-xs">
               {trend ? (
                 <span
