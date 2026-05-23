@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Activity,
   CircleAlert,
@@ -78,6 +78,11 @@ const gpuIntervals: Record<TimeRange, number> = {
 };
 
 const costBreakdownColors = ["var(--chart-1)", "var(--chart-2)", "var(--chart-4)"];
+const chartAnimation = {
+  barDuration: 800,
+  duration: 1100,
+  pieDuration: 900,
+};
 
 const activeTrainingJobs = [
   {
@@ -307,9 +312,111 @@ function getAlertTone(severity: SystemAlert["severity"]) {
   };
 }
 
+function usePrefersReducedMotion() {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    if (typeof window.matchMedia !== "function") {
+      return;
+    }
+
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const updatePreference = () => setPrefersReducedMotion(mediaQuery.matches);
+
+    updatePreference();
+    mediaQuery.addEventListener("change", updatePreference);
+
+    return () => mediaQuery.removeEventListener("change", updatePreference);
+  }, []);
+
+  return prefersReducedMotion;
+}
+
+function AnimatedProgressBar({
+  className,
+  value,
+}: {
+  className?: string;
+  value: number;
+}) {
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const [displayValue, setDisplayValue] = useState(prefersReducedMotion ? value : 0);
+
+  useEffect(() => {
+    if (prefersReducedMotion) {
+      setDisplayValue(value);
+      return;
+    }
+
+    const animationFrame = window.requestAnimationFrame(() => setDisplayValue(value));
+
+    return () => window.cancelAnimationFrame(animationFrame);
+  }, [prefersReducedMotion, value]);
+
+  return (
+    <div
+      className={cn(
+        "h-full rounded-full transition-[width] duration-1000 ease-out motion-reduce:transition-none",
+        className,
+      )}
+      style={{ width: `${displayValue}%` }}
+    />
+  );
+}
+
+function CountUpNumber({
+  suffix = "",
+  value,
+}: {
+  suffix?: string;
+  value: number;
+}) {
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const [displayValue, setDisplayValue] = useState(value);
+
+  useEffect(() => {
+    if (prefersReducedMotion) {
+      setDisplayValue(value);
+      return;
+    }
+
+    let animationFrame = 0;
+    let startTime: number | undefined;
+    const duration = 800;
+
+    const tick = (timestamp: number) => {
+      startTime ??= timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      const easedProgress = 1 - (1 - progress) ** 3;
+
+      setDisplayValue(Math.round(value * easedProgress));
+
+      if (progress < 1) {
+        animationFrame = window.requestAnimationFrame(tick);
+      } else {
+        setDisplayValue(value);
+      }
+    };
+
+    setDisplayValue(0);
+    animationFrame = window.requestAnimationFrame(tick);
+
+    return () => window.cancelAnimationFrame(animationFrame);
+  }, [prefersReducedMotion, value]);
+
+  return (
+    <span aria-label={`${value}${suffix}`} className="tabular-nums">
+      {displayValue}
+      {suffix}
+    </span>
+  );
+}
+
 export default function DashboardPage() {
   const [gpuRange, setGpuRange] = useState<TimeRange>("24h");
   const [visibleAlerts, setVisibleAlerts] = useState(initialAlerts);
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const isChartAnimationActive = !prefersReducedMotion;
   const gpuSummaryQuery = useGpuSummary();
   const gpuMetricsQuery = useGpuMetrics(gpuRange, gpuIntervals[gpuRange]);
   const inferenceMetricsQuery = useInferenceMetrics();
@@ -365,6 +472,7 @@ export default function DashboardPage() {
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard
+          animateValue
           description="avg cluster load"
           icon={Gauge}
           isLoading={gpuSummaryQuery.isLoading}
@@ -379,6 +487,7 @@ export default function DashboardPage() {
         />
 
         <MetricCard
+          animateValue
           description="deployed models"
           icon={Cpu}
           isLoading={modelRegistryQuery.isLoading}
@@ -396,15 +505,16 @@ export default function DashboardPage() {
         >
           <div className="flex min-h-8 items-center gap-2 text-xs">
             <Badge className="h-6 rounded-md px-2" variant="secondary">
-              {modelDeploymentStatus.healthy} healthy
+              <CountUpNumber value={modelDeploymentStatus.healthy} /> healthy
             </Badge>
             <Badge className="h-6 rounded-md px-2" variant="outline">
-              {modelDeploymentStatus.degraded} degraded
+              <CountUpNumber value={modelDeploymentStatus.degraded} /> degraded
             </Badge>
           </div>
         </MetricCard>
 
         <MetricCard
+          animateValue
           description="current p95"
           icon={Activity}
           isLoading={inferenceMetricsQuery.isLoading}
@@ -438,9 +548,11 @@ export default function DashboardPage() {
               <YAxis domain={["dataMin - 20", "dataMax + 20"]} hide />
               <ChartTooltip content={<ChartTooltipContent hideLabel />} cursor={false} />
               <Line
+                animationBegin={150}
+                animationDuration={chartAnimation.duration}
                 dataKey="p95LatencyMs"
                 dot={false}
-                isAnimationActive={false}
+                isAnimationActive={isChartAnimationActive}
                 name="latency"
                 stroke="var(--color-latency)"
                 strokeWidth={2}
@@ -451,6 +563,7 @@ export default function DashboardPage() {
         </MetricCard>
 
         <MetricCard
+          animateValue
           description={`${Math.round(budgetPercent)}% of budget`}
           icon={DollarSign}
           isLoading={billingUsageQuery.isLoading}
@@ -478,12 +591,9 @@ export default function DashboardPage() {
               className="h-2 overflow-hidden rounded-full bg-muted"
               role="progressbar"
             >
-              <div
-                className={cn(
-                  "h-full rounded-full transition-[width]",
-                  budgetPercent > 85 ? "bg-rose-500" : "bg-emerald-500",
-                )}
-                style={{ width: `${clampedBudgetPercent}%` }}
+              <AnimatedProgressBar
+                className={budgetPercent > 85 ? "bg-rose-500" : "bg-emerald-500"}
+                value={clampedBudgetPercent}
               />
             </div>
             <div className="flex justify-between text-xs text-muted-foreground">
@@ -543,9 +653,11 @@ export default function DashboardPage() {
                 />
                 <ChartTooltip content={<ChartTooltipContent />} cursor={false} />
                 <Line
+                  animationBegin={150}
+                  animationDuration={chartAnimation.duration}
                   dataKey="utilization"
                   dot={false}
-                  isAnimationActive={false}
+                  isAnimationActive={isChartAnimationActive}
                   name="utilization"
                   stroke="var(--color-utilization)"
                   strokeWidth={2.5}
@@ -603,30 +715,36 @@ export default function DashboardPage() {
                 />
                 <ChartTooltip content={<ChartTooltipContent />} cursor={false} />
                 <Area
+                  animationBegin={300}
+                  animationDuration={chartAnimation.duration}
                   dataKey="p99LatencyMs"
                   fill="var(--color-p99LatencyMs)"
                   fillOpacity={0.12}
-                  isAnimationActive={false}
+                  isAnimationActive={isChartAnimationActive}
                   name="p99LatencyMs"
                   stroke="var(--color-p99LatencyMs)"
                   strokeWidth={1.5}
                   type="monotone"
                 />
                 <Area
+                  animationBegin={180}
+                  animationDuration={chartAnimation.duration}
                   dataKey="p95LatencyMs"
                   fill="var(--color-p95LatencyMs)"
                   fillOpacity={0.18}
-                  isAnimationActive={false}
+                  isAnimationActive={isChartAnimationActive}
                   name="p95LatencyMs"
                   stroke="var(--color-p95LatencyMs)"
                   strokeWidth={1.5}
                   type="monotone"
                 />
                 <Area
+                  animationBegin={60}
+                  animationDuration={chartAnimation.duration}
                   dataKey="p50LatencyMs"
                   fill="var(--color-p50LatencyMs)"
                   fillOpacity={0.24}
-                  isAnimationActive={false}
+                  isAnimationActive={isChartAnimationActive}
                   name="p50LatencyMs"
                   stroke="var(--color-p50LatencyMs)"
                   strokeWidth={2}
@@ -666,7 +784,14 @@ export default function DashboardPage() {
                 />
                 <YAxis allowDecimals={false} axisLine={false} tickLine={false} tickMargin={8} />
                 <ChartTooltip content={<ChartTooltipContent />} cursor={false} />
-                <Bar dataKey="deployments" fill="var(--color-deployments)" radius={[4, 4, 0, 0]} />
+                <Bar
+                  animationBegin={100}
+                  animationDuration={chartAnimation.barDuration}
+                  dataKey="deployments"
+                  fill="var(--color-deployments)"
+                  isAnimationActive={isChartAnimationActive}
+                  radius={[4, 4, 0, 0]}
+                />
               </BarChart>
             </ChartContainer>
           </CardContent>
@@ -711,10 +836,12 @@ export default function DashboardPage() {
                   }
                 />
                 <Pie
+                  animationBegin={120}
+                  animationDuration={chartAnimation.pieDuration}
                   data={costBreakdown}
                   dataKey="value"
                   innerRadius={58}
-                  isAnimationActive={false}
+                  isAnimationActive={isChartAnimationActive}
                   nameKey="name"
                   outerRadius={96}
                   paddingAngle={3}
@@ -756,7 +883,9 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   <div className="text-right text-xs tabular-nums text-muted-foreground">
-                    <div>{job.progress}%</div>
+                    <div>
+                      <CountUpNumber suffix="%" value={job.progress} />
+                    </div>
                     <div>{job.eta}</div>
                   </div>
                 </div>
@@ -768,10 +897,7 @@ export default function DashboardPage() {
                   className="h-2 overflow-hidden rounded-full bg-muted"
                   role="progressbar"
                 >
-                  <div
-                    className="h-full rounded-full bg-primary transition-[width]"
-                    style={{ width: `${job.progress}%` }}
-                  />
+                  <AnimatedProgressBar className="bg-primary" value={job.progress} />
                 </div>
               </div>
             ))}

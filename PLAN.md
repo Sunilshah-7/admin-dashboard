@@ -435,7 +435,7 @@ Build the landing dashboard with these sections:
   - Mock API documentation
   - Screenshots/GIFs of key features
 - [x] Add `ARCHITECTURE.md` explaining data flow
-- [x] Add `CONTRIBUTING.md` for future extension
+
 
 ### 6.5 Deployment
 
@@ -591,7 +591,7 @@ Update resume/portfolio to highlight:
 
 - [ ] `README.md`
 - [ ] `ARCHITECTURE.md`
-- [ ] `CONTRIBUTING.md`
+
 
 ---
 
