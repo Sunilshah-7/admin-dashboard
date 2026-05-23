@@ -5,16 +5,15 @@
   "scripts": {
     "dev": "next dev",
     "dev:e2e": "next dev -H 127.0.0.1 -p 3100",
-    "build": "opennextjs-cloudflare build",
-    "build:next": "next build",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint .",
     "test": "vitest run",
     "test:e2e": "playwright test",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview"
+    "preview:worker": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy:worker": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
   },
   "dependencies": {
     "@faker-js/faker": "^10.4.0",
@@ -43,6 +42,7 @@
     "zustand": "^5.0.13"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "latest",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -60,8 +60,7 @@
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.6",
-    "@opennextjs/cloudflare": "latest",
-    "wrangler": "latest"
+    "wrangler": "^4.94.0"
   },
   "msw": {
     "workerDirectory": [
