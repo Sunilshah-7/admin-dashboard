@@ -1,6 +1,6 @@
-# Reflection AI Infrastructure Console
+# AI Infrastructure Console
 
-Reflection AI Infrastructure Console is a Next.js enterprise dashboard for operating an AI platform. It models the day-to-day workflows platform teams need: GPU and inference monitoring, model registry management, deployment tracking, RBAC, integrations, audit trails, billing visibility, and an AI playground backed by Hugging Face when a token is configured.
+AI Infrastructure Console is a Next.js enterprise dashboard for operating an AI platform. It models the day-to-day workflows platform teams need: GPU and inference monitoring, model registry management, deployment tracking, RBAC, integrations, audit trails, billing visibility, and an AI playground backed by Hugging Face when a token is configured.
 
 The app is intentionally self-contained. MSW provides a typed mock API in development and tests, so the full console can run locally without external infrastructure.
 

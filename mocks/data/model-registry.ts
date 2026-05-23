@@ -26,8 +26,8 @@ function generateModelVersion(modelId: string, index: number): ModelVersion {
       "Updated safety filters and regression suite.",
     ]),
     createdAt: faker.date.recent({ days: 120 }).toISOString(),
-    createdBy: faker.internet.email({ provider: "reflection.ai" }),
-    artifactUri: `s3://reflection-model-registry/${modelId}/${version}`,
+    createdBy: faker.internet.email({ provider: "imd.ai" }),
+    artifactUri: `s3://imd-model-registry/${modelId}/${version}`,
   };
 }
 
@@ -40,7 +40,7 @@ function generateModelDeployment(modelId: string, version: ModelVersion): ModelD
     modelVersionId: version.id,
     environment,
     status: faker.helpers.arrayElement(["pending", "deploying", "healthy", "degraded", "failed"]),
-    endpointUrl: `https://${environment}.api.reflection.ai/models/${modelId}`,
+    endpointUrl: `https://${environment}.api.imd.ai/models/${modelId}`,
     replicas: faker.number.int({ min: 1, max: environment === "production" ? 12 : 4 }),
     lastDeployedAt: faker.date.recent({ days: 45 }).toISOString(),
   };

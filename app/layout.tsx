@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Reflection AI Infrastructure Console",
-    template: "%s | Reflection AI",
+    default: "Infrastructure Management Dashboard",
+    template: "%s | IMD",
   },
   description:
     "Enterprise dashboard for GPU monitoring, model deployments, team access, and AI platform operations.",

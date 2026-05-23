@@ -44,11 +44,11 @@ test("team invitation flow adds a pending member", async ({ page }) => {
   await login(page);
   await page.getByRole("link", { name: /Teams/ }).click();
   await page.getByRole("button", { name: "Invite member" }).click();
-  await page.getByLabel("Email").fill("new.member@reflection.ai");
+  await page.getByLabel("Email").fill("new.member@imd.ai");
   await page.getByRole("button", { name: "Send invite" }).click();
 
   await expect(page.getByRole("table", { name: "Team members" })).toContainText(
-    "new.member@reflection.ai",
+    "new.member@imd.ai",
   );
 });
 

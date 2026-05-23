@@ -25,7 +25,7 @@ export default function NotFound() {
             width={48}
           />
           <p className="text-sm text-muted-foreground">
-            This route is not part of the Reflection AI infrastructure console.
+            This route is not part of the AI infrastructure console.
           </p>
           <Button asChild>
             <Link href="/dashboard">Return to dashboard</Link>

@@ -369,7 +369,7 @@ export default function DashboardPage() {
           icon={Gauge}
           isLoading={gpuSummaryQuery.isLoading}
           label="GPU Utilization"
-          tone="text-blue-600 dark:text-blue-400"
+          tone="text-primary"
           trend={{
             direction: gpuTrend >= 0 ? "up" : "down",
             label: `${gpuTrend >= 0 ? "+" : ""}${gpuTrend.toFixed(1)}% vs earlier`,

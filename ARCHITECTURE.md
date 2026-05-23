@@ -1,6 +1,6 @@
 # Architecture
 
-Reflection AI Infrastructure Console is a client-heavy Next.js 16 App Router app backed by a local mock API. The goal is to model realistic enterprise AI operations while keeping the project runnable on a laptop.
+Infrastructure Management Dashboard is a client-heavy Next.js 16 App Router app backed by a local mock API. The goal is to model realistic enterprise AI operations while keeping the project runnable on a laptop.
 
 ## Runtime Flow
 

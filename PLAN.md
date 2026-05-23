@@ -1,8 +1,8 @@
-# Reflection AI Dashboard — Build Plan
+# Infrastructure Management Dashboard — Build Plan
 
 ## Project Overview
 
-A Next.js 16 enterprise admin dashboard for AI infrastructure management, designed as a portfolio project targeting Reflection AI's "Member of Technical Staff — Applications" role. The dashboard simulates a developer-friendly AI platform for engineering teams, featuring GPU monitoring, model registry, deployment pipelines, team management, and enterprise integrations.
+A Next.js 16 enterprise admin dashboard for AI infrastructure management, designed as a portfolio project. The dashboard simulates a developer-friendly AI platform for engineering teams, featuring GPU monitoring, model registry, deployment pipelines, team management, and enterprise integrations.
 
 ---
 
@@ -30,7 +30,7 @@ A Next.js 16 enterprise admin dashboard for AI infrastructure management, design
 ## Architecture
 
 ```
-reflection-dashboard/
+admin-dashboard/
 ├── app/                          # Next.js App Router
 │   ├── (dashboard)/              # Dashboard layout group
 │   │   ├── layout.tsx            # Sidebar + Topbar shell
@@ -130,7 +130,7 @@ Install the following shadcn/ui primitives:
 ### 1.4 Configure Theme & Layout
 
 - [x] Set up `next-themes` for dark/light mode
-- [x] Create enterprise color palette (slate/blue/emerald/amber/rose)
+- [x] Create enterprise color palette (slate/coral/warm sand/emerald/amber/rose)
 - [x] Build root layout with font (Inter), metadata, providers
 - [x] Build dashboard layout: collapsible sidebar, topbar, main content area
 - [x] Add responsive breakpoints (mobile sidebar drawer)
@@ -305,7 +305,7 @@ Build the landing dashboard with these sections:
 ### 4.1 RBAC & Team Management (`/teams`)
 
 - [x] Team table: Name, Email, Role, Status, Last Active, Actions
-- [x] Role badges: Admin (red), Engineer (blue), Viewer (gray)
+- [x] Role badges: Admin (red), Engineer (warm sand), Viewer (gray)
 - [x] Invite member modal: Email, role selection, workspace assignment
 - [x] Edit member drawer: Change role, deactivate account
 - [x] Permission matrix view (read-only): What each role can access

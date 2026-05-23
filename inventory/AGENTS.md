@@ -6,7 +6,7 @@ Guardrails for AI agents working in this repository. Follow the current codebase
 
 This repo is currently a Vite React admin dashboard written in JavaScript/JSX with plain CSS. It is not currently a Next.js, TypeScript, Tailwind, shadcn/ui, Zustand, TanStack Query, MSW, or Playwright project.
 
-`PLAN.md` describes a target/future Reflection AI dashboard architecture. Do not introduce that stack incrementally into the current app unless the task is explicitly a migration task or the user approves a migration plan.
+`PLAN.md` describes a target/future IMD AI dashboard architecture. Do not introduce that stack incrementally into the current app unless the task is explicitly a migration task or the user approves a migration plan.
 
 ## Stack & Technologies
 
@@ -130,7 +130,7 @@ Ask for user approval before:
 
 For complex features:
 
-- First identify whether the feature belongs to the current Vite dashboard or the future Reflection AI dashboard plan.
+- First identify whether the feature belongs to the current Vite dashboard or the future IMD AI dashboard plan.
 - Break the work into small route/component/data/style changes.
 - Preserve a working build after each major step.
 - Keep mock data realistic but clearly fake.

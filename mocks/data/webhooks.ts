@@ -27,7 +27,7 @@ function generateWebhooks(): Webhook[] {
     {
       id: "webhook_ops_alerts",
       name: "Ops alerts",
-      url: "https://hooks.example.com/reflection/ops",
+      url: "https://hooks.example.com/imd/ops",
       events: ["deployment.failed", "billing.threshold_reached"],
       status: "active",
       secretPrefix: "whsec_J9q2R...",
@@ -37,7 +37,7 @@ function generateWebhooks(): Webhook[] {
     {
       id: "webhook_model_registry",
       name: "Model registry sync",
-      url: "https://platform.example.com/api/reflection/events",
+      url: "https://platform.example.com/api/imd/events",
       events: ["model.deployed"],
       status: "active",
       secretPrefix: "whsec_F7m4K...",
@@ -47,7 +47,7 @@ function generateWebhooks(): Webhook[] {
     {
       id: "webhook_security_archive",
       name: "Security archive",
-      url: "https://audit.example.com/webhooks/reflection",
+      url: "https://audit.example.com/webhooks/imd",
       events: ["team.member_invited", "api_key.revoked"],
       status: "disabled",
       secretPrefix: "whsec_P3x8T...",

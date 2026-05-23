@@ -51,7 +51,7 @@ const webhookDeliveries = generateWebhookDeliveries(webhooks);
 const currentUser = {
   id: "user_admin",
   name: "Platform Admin",
-  email: "admin@reflection.ai",
+  email: "admin@imd.ai",
 };
 
 const adminPermissions = getRolePermissions("admin");
@@ -266,7 +266,7 @@ const handlers = [
       modelVersionId: body.versionId ?? latestVersion.id,
       environment: body.environment ?? "staging",
       status: "deploying",
-      endpointUrl: `https://${body.environment ?? "staging"}.api.reflection.ai/models/${model.id}`,
+      endpointUrl: `https://${body.environment ?? "staging"}.api.imd.ai/models/${model.id}`,
       replicas: body.replicas ?? 2,
       lastDeployedAt: new Date().toISOString(),
     };
@@ -325,7 +325,7 @@ const handlers = [
     const member: TeamMember = {
       id: `team_member_${teamMembers.length + 1}`,
       name: body.name ?? String(body.email ?? "Invited User").split("@")[0] ?? "Invited User",
-      email: body.email ?? "invited@reflection.ai",
+      email: body.email ?? "invited@imd.ai",
       role,
       permissions: getRolePermissions(role),
       status: "invited",

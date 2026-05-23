@@ -20,7 +20,7 @@ const useThemeStore = create<ThemeState>()(
       setResolvedTheme: (resolvedTheme) => set({ resolvedTheme }),
     }),
     {
-      name: "reflection-theme",
+      name: "imd-theme",
       partialize: ({ preference }) => ({ preference }),
     },
   ),

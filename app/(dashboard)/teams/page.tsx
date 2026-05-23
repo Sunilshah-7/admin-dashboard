@@ -88,7 +88,7 @@ function getRoleBadgeClassName(role: Role) {
   }
 
   if (role === "engineer") {
-    return "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900/60 dark:bg-blue-950/30 dark:text-blue-300";
+    return "border-[#ead2ac] bg-[#fff7e8] text-[#6b4423] dark:border-[#9f7b52]/60 dark:bg-[#4d3328]/30 dark:text-[#f6d6a8]";
   }
 
   return "border-border bg-muted text-muted-foreground";
@@ -322,7 +322,7 @@ export default function TeamsPage() {
               <Input
                 id="inviteEmail"
                 type="email"
-                placeholder="teammate@reflection.ai"
+                placeholder="teammate@imd.ai"
                 value={inviteEmail}
                 onChange={(event) => setInviteEmail(event.target.value)}
               />

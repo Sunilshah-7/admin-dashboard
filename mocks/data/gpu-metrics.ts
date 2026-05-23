@@ -2,7 +2,7 @@ import { faker } from "@faker-js/faker";
 
 import type { GpuMetric, GpuMetricSeries, TimeRange } from "@/types/api";
 
-const DEFAULT_CLUSTER_ID = "cluster_reflection_primary";
+const DEFAULT_CLUSTER_ID = "cluster_imd_primary";
 const GPU_IDS = ["h100-01", "h100-02", "h100-03", "h100-04", "a100-01", "a100-02"];
 
 function clamp(value: number, min: number, max: number) {

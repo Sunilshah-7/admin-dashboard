@@ -70,7 +70,7 @@ function generatePlaygroundSessions(count = 6): PlaygroundSession[] {
       temperature: Number(faker.number.float({ min: 0.1, max: 0.9 }).toFixed(1)),
       maxTokens: faker.helpers.arrayElement([512, 1024, 2048, 4096]),
       messages,
-      createdBy: faker.internet.email({ provider: "reflection.ai" }),
+      createdBy: faker.internet.email({ provider: "imd.ai" }),
       createdAt: faker.date.recent({ days: 10 }).toISOString(),
       updatedAt: faker.date.recent({ days: 2 }).toISOString(),
     };
