@@ -106,4 +106,4 @@ The optional real playground route is `POST /api/playground/huggingface`. It use
 ## Documentation
 
 - [ARCHITECTURE.md](ARCHITECTURE.md): data flow, routing, state, mocks, testing strategy
-- [CONTRIBUTING.md](CONTRIBUTING.md): workflow for adding routes, API handlers, tests, and UI
+
