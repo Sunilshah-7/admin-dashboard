@@ -2,11 +2,14 @@
 
 import * as React from "react";
 
+const shouldEnableMockApi =
+  process.env.NODE_ENV === "development" || process.env.NEXT_PUBLIC_ENABLE_MOCK_API === "true";
+
 function MswProvider({ children }: { children: React.ReactNode }) {
-  const [ready, setReady] = React.useState(process.env.NODE_ENV !== "development");
+  const [ready, setReady] = React.useState(!shouldEnableMockApi);
 
   React.useEffect(() => {
-    if (process.env.NODE_ENV !== "development") {
+    if (!shouldEnableMockApi) {
       return;
     }
 
